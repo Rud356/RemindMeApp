@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RemindMeApp</string>
+    <string name="form_input_ip">Введите IP-адрес</string>
+    <string name="form_input_password">Введите пароль</string>
+    <string name="form_input_repeat_password">Повторите пароль</string>
+    <string name="form_input_login">Введите логин</string>
 </resources>
