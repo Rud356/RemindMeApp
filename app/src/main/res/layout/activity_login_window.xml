@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_window"
     android:background="#F0F2F7"
     tools:context=".MainActivity">
 
@@ -18,7 +18,9 @@
         android:padding="5dp"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="back image button"
+        tools:ignore="HardcodedText"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,12 +29,12 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
+        
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal" >
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -40,11 +42,12 @@
                 android:src="@drawable/ic_clover" />
 
             <TextView
-                android:id="@+id/textViewLogin"
+                android:id="@+id/textViewTextLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nunito_bold"
                 android:text="Вход"
+                tools:ignore="HardcodedText,RtlSymmetry"
                 android:textColor="@color/black"
                 android:textSize="32sp"
                 android:paddingEnd="44dp"
@@ -68,42 +71,51 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:autofillHints="login"
                 android:background="@drawable/edittext_background"
                 android:ems="10"
-                android:fontFamily="@font/nunito_lightitalic"
+                android:fontFamily="@font/nunito_mediumitalic"
+                android:textColor="@color/black"
                 android:textSize="18sp"
-                android:hint="Введите логин"
+                android:hint="@string/form_input_login"
                 android:inputType="text"
                 android:paddingVertical="10dp"
-                android:paddingStart="20dp" />
+                android:paddingStart="20dp"
+                tools:ignore="RtlSymmetry" />
 
             <EditText
                 android:id="@+id/editTextIp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:autofillHints="ip-address"
                 android:background="@drawable/edittext_background"
                 android:ems="10"
-                android:fontFamily="@font/nunito_lightitalic"
+                android:fontFamily="@font/nunito_mediumitalic"
+                android:textColor="@color/black"
                 android:textSize="18sp"
-                android:hint="Введите IP-адрес"
+                android:hint="@string/form_input_ip"
                 android:inputType="text"
                 android:paddingVertical="10dp"
-                android:paddingStart="20dp" />
+                android:paddingStart="20dp"
+                tools:ignore="RtlSymmetry" />
 
             <EditText
                 android:id="@+id/editTextTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:autofillHints="password"
                 android:background="@drawable/edittext_background"
                 android:ems="10"
-                android:fontFamily="@font/nunito_lightitalic"
+                android:fontFamily="@font/nunito_mediumitalic"
+                android:textColor="@color/black"
                 android:textSize="18sp"
-                android:hint="Введите пароль"
+                android:hint="@string/form_input_password"
                 android:inputType="textPassword"
                 android:paddingVertical="10dp"
-                android:paddingStart="20dp" />
+                android:paddingStart="20dp"
+                tools:ignore="RtlSymmetry" />
 
         </LinearLayout>
 
@@ -117,7 +129,9 @@
             android:paddingHorizontal="40dp"
             android:paddingVertical="10dp"
             android:text="Войти"
-            android:textSize="20sp"
+            tools:ignore="HardcodedText"
+            android:textColor="#fff"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayoutInputLogin" />
@@ -137,16 +151,18 @@
                 android:layout_marginEnd="5dp"
                 android:fontFamily="@font/nunito_light"
                 android:textSize="16sp"
-                android:text="Ещё нет профиля?" />
+                android:text="Ещё нет профиля?"
+                tools:ignore="HardcodedText" />
 
             <TextView
+                android:id="@+id/textViewRegister"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nunito_mediumitalic"
                 android:textSize="16sp"
                 android:text="Регистрация"
+                tools:ignore="HardcodedText"
                 android:textColor="#134AAA"
-                android:autoLink="web"
                 android:linksClickable="true"/>
 
 
@@ -155,9 +171,3 @@
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
-
