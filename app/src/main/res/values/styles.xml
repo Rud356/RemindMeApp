@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="WeekDayTextStyle">
+        <item name="android:textColor">@color/light_green</item>  <!-- Цвет текста -->
+        <item name="android:textSize">14sp</item>                <!-- Размер текста -->
+        <item name="android:fontFamily">@font/nunito_bold</item> <!-- Шрифт -->
+        <item name="android:padding">4dp</item>                  <!-- Отступы -->
+    </style>
+
+    <style name="DateTextStyle">
+        <item name="android:textColor">@color/black</item> <!-- Цвет текста -->
+        <item name="android:textSize">16sp</item>                        <!-- Размер текста -->
+        <item name="android:fontFamily">@font/nunito_regular</item>                <!-- Шрифт -->
+        <item name="android:padding">10dp</item>
+    </style>
+</resources>
