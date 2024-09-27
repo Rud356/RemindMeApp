@@ -10,8 +10,8 @@
 
     <ImageButton
         android:id="@+id/imageButtonBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginStart="13dp"
         android:layout_marginTop="22dp"
         android:background="@android:color/transparent"
@@ -29,20 +29,23 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_clover" />
+                android:contentDescription="clover icon"
+                android:src="@drawable/ic_clover"
+                tools:ignore="HardcodedText" />
 
             <TextView
-                android:id="@+id/textViewTextLogin"
+                android:id="@+id/textViewLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nunito_bold"
@@ -79,7 +82,7 @@
                 android:textSize="18sp"
                 android:hint="@string/form_input_login"
                 android:inputType="text"
-                android:paddingVertical="10dp"
+                android:paddingVertical="13dp"
                 android:paddingStart="20dp"
                 tools:ignore="RtlSymmetry" />
 
@@ -96,7 +99,7 @@
                 android:textSize="18sp"
                 android:hint="@string/form_input_ip"
                 android:inputType="text"
-                android:paddingVertical="10dp"
+                android:paddingVertical="13dp"
                 android:paddingStart="20dp"
                 tools:ignore="RtlSymmetry" />
 
@@ -113,7 +116,7 @@
                 android:textSize="18sp"
                 android:hint="@string/form_input_password"
                 android:inputType="textPassword"
-                android:paddingVertical="10dp"
+                android:paddingVertical="13dp"
                 android:paddingStart="20dp"
                 tools:ignore="RtlSymmetry" />
 
@@ -149,7 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
-                android:fontFamily="@font/nunito_light"
+                android:fontFamily="@font/nunito_regular"
                 android:textSize="16sp"
                 android:text="Ещё нет профиля?"
                 tools:ignore="HardcodedText" />
@@ -158,12 +161,13 @@
                 android:id="@+id/textViewRegister"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
                 android:fontFamily="@font/nunito_mediumitalic"
-                android:textSize="16sp"
                 android:text="Регистрация"
-                tools:ignore="HardcodedText"
                 android:textColor="#134AAA"
-                android:linksClickable="true"/>
+                android:textSize="16sp"
+                tools:ignore="HardcodedText,TouchTargetSizeCheck" />
 
 
         </LinearLayout>

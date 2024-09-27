@@ -22,9 +22,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val listView: ListView = findViewById(R.id.listView)
-        val items = listOf("Item 1", "Item 2", "Item 3", "Item 4") // Ваши данные
+        val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7") // Ваши данные
 
-        val adapter = CustomAdapter(this, items)
-        listView.adapter = adapter
+        val adapter1 = CustomShortAdapter(this, items)
+        //val adapter2 = CustomDetalicAdapter(this, items)
+        listView.adapter = adapter1
     }
 }
