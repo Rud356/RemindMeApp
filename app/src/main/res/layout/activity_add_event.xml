@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_event"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0F2F7"
+    >
+
+    <LinearLayout
+        android:id="@+id/linearTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="22dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageButtonBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:id="@+id/textTop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Новое событие"
+            android:textColor="@color/light_green"
+            android:textSize="32sp"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutInputLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearTop">
+
+        <LinearLayout
+            android:id="@+id/linearLayoutColors"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="10dp"
+            android:layout_marginBottom="15dp">
+
+            <ImageView
+                android:id="@+id/circleBlue"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/circle_blue"
+                android:layout_marginEnd="15dp"/>
+
+            <ImageView
+                android:id="@+id/circleRed"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/circle_red"
+                android:layout_marginEnd="15dp"/>
+
+            <ImageView
+                android:id="@+id/circleGreen"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/circle_green"
+                android:layout_marginEnd="15dp"/>
+
+            <ImageView
+                android:id="@+id/circleYellow"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/circle_yellow"
+                android:layout_marginEnd="15dp"/>
+
+            <ImageView
+                android:id="@+id/circleGray"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/circle_gray" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/editTextNameEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="login"
+            android:background="@drawable/edittext_background"
+            android:ems="10"
+            android:fontFamily="@font/nunito_mediumitalic"
+            android:hint="Название события*"
+            android:inputType="text"
+            android:paddingVertical="13dp"
+            android:paddingStart="20dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText,RtlSymmetry" />
+
+        <EditText
+            android:id="@+id/editTextNotification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:autofillHints="ip-address"
+            android:background="@drawable/edittext_background"
+            android:ems="10"
+            android:fontFamily="@font/nunito_mediumitalic"
+            android:hint="Сообщение в уведомлении"
+            android:inputType="text"
+            android:paddingVertical="13dp"
+            android:paddingStart="20dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText,RtlSymmetry" />
+
+        <EditText
+            android:id="@+id/editTextDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:autofillHints="password"
+            android:background="@drawable/edittext_background"
+            android:drawableEnd="@drawable/ic_calendar"
+            android:ems="10"
+            android:fontFamily="@font/nunito_mediumitalic"
+            android:hint="Дата"
+            android:inputType="date"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="13dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:id="@+id/linearLayoutTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/timeStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="10dp"
+                android:autofillHints="timeStart"
+                android:background="@drawable/edittext_background"
+                android:drawableEnd="@drawable/ic_time"
+                android:ems="7"
+                android:fontFamily="@font/nunito_mediumitalic"
+                android:hint="Start"
+                android:inputType="time"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="13dp"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/timeEnd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:autofillHints="timeEnd"
+                android:background="@drawable/edittext_background"
+                android:drawableEnd="@drawable/ic_time"
+                android:ems="7"
+                android:fontFamily="@font/nunito_mediumitalic"
+                android:hint="End"
+                android:inputType="time"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="13dp"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <Switch
+            android:id="@+id/switchDailyEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:text="Событие на весь день"
+            android:fontFamily="@font/nunito_regular"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:thumbTint="@color/dark_green"
+            android:trackTint="@color/switch_color"
+            tools:ignore="HardcodedText,UseSwitchCompatOrMaterialXml"
+            android:layout_marginTop="8dp"/>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchRemind"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Напомнить"
+            android:fontFamily="@font/nunito_regular"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:paddingVertical="13dp"
+            android:gravity="start"
+            android:paddingHorizontal="20dp"
+            android:background="@drawable/edittext_background"
+            android:thumbTint="@color/dark_green"
+            android:trackTint="@color/switch_color"
+            android:layout_marginTop="8dp"
+            tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:id="@+id/linearLayoutRepeat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/buttonNotRepeat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="0dp"
+                    android:backgroundTint="@color/light_green"
+                    android:text="Не повторять"
+                    android:fontFamily="@font/nunito_regular"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:paddingHorizontal="5dp"
+                    android:layout_marginEnd="5dp"
+                    tools:ignore="HardcodedText" />
+
+                <Button
+                    android:id="@+id/buttonDayRepeat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="0dp"
+                    android:backgroundTint="#DCE3D0"
+                    android:text="Ежедневно"
+                    android:fontFamily="@font/nunito_regular"
+                    android:textSize="14sp"
+                    android:textColor="#707070"
+                    android:paddingHorizontal="5dp"
+                    android:layout_marginEnd="5dp"
+                    tools:ignore="HardcodedText" />
+
+                <Button
+                    android:id="@+id/buttonWeekRepeat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="0dp"
+                    android:backgroundTint="#DCE3D0"
+                    android:text="Еженедельно"
+                    android:fontFamily="@font/nunito_regular"
+                    android:textSize="14sp"
+                    android:textColor="#707070"
+                    android:paddingHorizontal="5dp"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="3"
+                android:orientation="horizontal"
+                android:gravity="start"
+                android:paddingHorizontal="10dp">
+
+                <Button
+                    android:id="@+id/buttonMonthRepeat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="0dp"
+                    android:backgroundTint="#DCE3D0"
+                    android:text="Ежемесячно"
+                    android:fontFamily="@font/nunito_regular"
+                    android:textSize="14sp"
+                    android:textColor="#707070"
+                    android:paddingHorizontal="5dp"
+                    android:layout_marginEnd="5dp"
+                    tools:ignore="ButtonStyle,HardcodedText" />
+
+                <Button
+                    android:id="@+id/buttonYearRepeat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="0dp"
+                    android:backgroundTint="#DCE3D0"
+                    android:text="Ежегодно"
+                    android:fontFamily="@font/nunito_regular"
+                    android:textSize="14sp"
+                    android:textColor="#707070"
+                    android:paddingHorizontal="5dp"
+                    tools:ignore="ButtonStyle,HardcodedText" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/nunito_bold"
+        android:padding="10dp"
+        android:text="Сохранить"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:backgroundTint="@color/light_green"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
