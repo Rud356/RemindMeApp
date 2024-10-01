@@ -87,7 +87,7 @@
                 tools:ignore="RtlSymmetry" />
 
             <EditText
-                android:id="@+id/editTextTextPassword"
+                android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -104,7 +104,7 @@
                 tools:ignore="RtlSymmetry" />
 
             <EditText
-                android:id="@+id/editTextTextConfirmPassword"
+                android:id="@+id/editTextConfirmPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"

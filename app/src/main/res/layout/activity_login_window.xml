@@ -75,12 +75,12 @@
                 android:background="@drawable/edittext_background"
                 android:ems="10"
                 android:fontFamily="@font/nunito_mediumitalic"
-                android:textColor="@color/black"
-                android:textSize="18sp"
                 android:hint="@string/form_input_login"
                 android:inputType="text"
                 android:paddingVertical="10dp"
                 android:paddingStart="20dp"
+                android:textColor="@color/black"
+                android:textSize="18sp"
                 tools:ignore="RtlSymmetry" />
 
             <EditText
@@ -101,7 +101,7 @@
                 tools:ignore="RtlSymmetry" />
 
             <EditText
-                android:id="@+id/editTextTextPassword"
+                android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
