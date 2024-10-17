@@ -10,8 +10,8 @@
 
     <ImageButton
         android:id="@+id/imageButtonBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="13dp"
         android:layout_marginTop="22dp"
         android:background="@android:color/transparent"
@@ -29,7 +29,6 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
