@@ -165,8 +165,7 @@
                 android:textSize="16sp"
                 android:text="Войти"
                 tools:ignore="HardcodedText"
-                android:textColor="#134AAA"
-                android:linksClickable="true"/>
+                android:textColor="#134AAA"/>
 
 
         </LinearLayout>
