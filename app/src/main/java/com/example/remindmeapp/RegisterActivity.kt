@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import com.example.remindmeapp.registration.RegistrationService
 
 class RegisterActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +34,7 @@ class RegisterActivity : Activity() {
 
             var registered = true
 
-            /*if (login == "" || ip == "" || pass == "" || passConfirm == ""){
+            if (login == "" || ip == "" || pass == "" || passConfirm == ""){
                 Toast.makeText(this, "Необходимо заполнить все поля", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener;
             }
@@ -41,12 +42,13 @@ class RegisterActivity : Activity() {
             if (pass != passConfirm) {
                 Toast.makeText(this, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener;
-            }*/
+            }
 
-            // TODO: Необходимо отправить запрос
+            // TODO: Необходимо отправить запрос на сервак
 
             if (registered) {
                 val intent = Intent(this, MainActivity::class.java)
+                RegistrationService.loginUser(this, login, pass)
                 startActivity(intent)
                 finish()
             } else {

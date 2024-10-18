@@ -1,5 +1,6 @@
 package com.example.remindmeapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -7,8 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import com.example.remindmeapp.registration.RegistrationService
 
 class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
@@ -40,14 +40,17 @@ class MainActivity : AppCompatActivity() {
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_user -> {
-                    Toast.makeText(this, "Профиль выбран", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Профиль выбран ${RegistrationService.user?.username}", Toast.LENGTH_SHORT).show()
                 }
                 R.id.nav_events -> {
                     FragmentSwitcher.replaceFragment(AllEventsFragment())
                 }
                 R.id.nav_exit -> {
                     // TODO: Выход из профиля
-                    Toast.makeText(this, "Выход из профиля", Toast.LENGTH_SHORT).show()
+                    RegistrationService.logOut(this)
+                    intent = Intent(this, LoadingActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 }
             }
 
