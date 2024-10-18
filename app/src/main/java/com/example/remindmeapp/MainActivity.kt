@@ -1,24 +1,63 @@
 package com.example.remindmeapp
 
-import android.app.Activity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity() {
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var toggle: ActionBarDrawerToggle
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_driwer)
+        FragmentSwitcher.initialize(supportFragmentManager, R.id.fragment_container)
 
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        // Настроить Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // Подключение DrawerLayout и NavigationView
+        drawerLayout = findViewById(R.id.drawer_layout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+
+        // Настроить ActionBarDrawerToggle
+        toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // Слушатель нажатий на элементы меню
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_user -> {
+                    Toast.makeText(this, "Профиль выбран", Toast.LENGTH_SHORT).show()
+                }
+                R.id.nav_events -> {
+                    FragmentSwitcher.replaceFragment(AllEventsFragment())
+                }
+                R.id.nav_exit -> {
+                    // TODO: Выход из профиля
+                    Toast.makeText(this, "Выход из профиля", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            drawerLayout.closeDrawers()
+            true
         }
 
-        val listView: ListView = findViewById(R.id.listView)
-        val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7") // Ваши данные
-
-        val adapter1 = CustomShortAdapter(this, items)
-        //val adapter2 = CustomDetalicAdapter(this, items)
-        listView.adapter = adapter1
+        // Загружаем основной контент из activity_main.xml
+        if (savedInstanceState == null) {
+            FragmentSwitcher.replaceFragment(MainFragment(), false)
+        }
     }
 }
