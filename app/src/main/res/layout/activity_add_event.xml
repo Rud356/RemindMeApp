@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearTop">
 
         <com.example.remindmeapp.ColorPickerView
-            android:id="@+id/color_picker"
+            android:id="@+id/colorPicker"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -142,7 +142,7 @@
             android:drawableEnd="@drawable/ic_calendar"
             android:ems="10"
             android:fontFamily="@font/nunito_mediumitalic"
-            android:hint="Дата"
+            android:hint="Дата*"
             android:inputType="date"
             android:paddingHorizontal="20dp"
             android:paddingVertical="13dp"
@@ -168,7 +168,7 @@
                 android:drawableEnd="@drawable/ic_time"
                 android:ems="7"
                 android:fontFamily="@font/nunito_mediumitalic"
-                android:hint="Время"
+                android:hint="Время*"
                 android:inputType="time"
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="13dp"

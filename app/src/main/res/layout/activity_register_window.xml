@@ -88,8 +88,6 @@
                 android:paddingStart="20dp"
                 tools:ignore="RtlSymmetry" />
 
-
-
             <EditText
                 android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
@@ -174,15 +172,7 @@
                 tools:ignore="HardcodedText"
                 android:textColor="@color/blue"/>
 
-
         </LinearLayout>
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
-

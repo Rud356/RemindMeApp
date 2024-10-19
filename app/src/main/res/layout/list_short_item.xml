@@ -36,12 +36,13 @@
                 android:id="@+id/itemTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Время"
+                android:text="ЧЧ:ММ"
                 android:layout_marginEnd="15dp"
                 android:textColor="@color/gray"
                 tools:ignore="HardcodedText" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/iconFirst"
                 android:layout_width="20dp"
                 android:layout_height="20dp"

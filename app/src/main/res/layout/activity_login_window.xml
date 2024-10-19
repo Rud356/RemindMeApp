@@ -85,8 +85,6 @@
                 android:inputType="text"
                 android:paddingVertical="13dp"
                 android:paddingStart="20dp"
-                android:textColor="@color/black"
-                android:textSize="18sp"
                 tools:ignore="RtlSymmetry" />
 
             <EditText

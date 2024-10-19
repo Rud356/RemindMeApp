@@ -38,7 +38,7 @@ class AddEventFragment : Fragment() {
         val eventTextTxt: EditText = view.findViewById(R.id.editTextNotification)
         dateInput = view.findViewById(R.id.editTextDate)
         val eventStartTxt: EditText = view.findViewById(R.id.timeStart)
-        val colorPicker: ColorPickerView = view.findViewById(R.id.color_picker)
+        val colorPicker: ColorPickerView = view.findViewById(R.id.colorPicker)
 
         // Меняем дату на текущий день, если перешли с окна дня событий
         date = arguments?.getParcelable("date")
