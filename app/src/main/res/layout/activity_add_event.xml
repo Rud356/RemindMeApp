@@ -51,51 +51,56 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearTop">
 
-        <LinearLayout
-            android:id="@+id/linearLayoutColors"
+        <com.example.remindmeapp.ColorPickerView
+            android:id="@+id/color_picker"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:layout_gravity="center"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
             android:orientation="horizontal"
-            android:paddingHorizontal="10dp"
-            android:layout_marginBottom="15dp">
+            android:paddingHorizontal="10dp">
 
             <ImageView
                 android:id="@+id/circleBlue"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/circle_blue"
-                android:layout_marginEnd="15dp"/>
+                android:tag="#400ed0"/>
 
             <ImageView
                 android:id="@+id/circleRed"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/circle_red"
-                android:layout_marginEnd="15dp"/>
+                android:tag="#c80f3b"/>
 
             <ImageView
                 android:id="@+id/circleGreen"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/circle_green"
-                android:layout_marginEnd="15dp"/>
+                android:tag="#1fb845"/>
 
             <ImageView
                 android:id="@+id/circleYellow"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/circle_yellow"
-                android:layout_marginEnd="15dp"/>
+                android:tag="#f5eb0c"/>
 
             <ImageView
                 android:id="@+id/circleGray"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:background="@drawable/circle_gray" />
+                android:background="@drawable/circle_gray"
+                android:tag="#c4c4c4"/>
 
-        </LinearLayout>
+        </com.example.remindmeapp.ColorPickerView>
 
         <EditText
             android:id="@+id/editTextNameEvent"
@@ -140,7 +145,7 @@
             android:drawableEnd="@drawable/ic_calendar"
             android:ems="10"
             android:fontFamily="@font/nunito_mediumitalic"
-            android:hint="Дата"
+            android:hint="Дата*"
             android:inputType="date"
             android:paddingHorizontal="20dp"
             android:paddingVertical="13dp"
@@ -161,13 +166,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="0dp"
                 android:autofillHints="timeStart"
                 android:background="@drawable/edittext_background"
                 android:drawableEnd="@drawable/ic_time"
                 android:ems="7"
                 android:fontFamily="@font/nunito_mediumitalic"
-                android:hint="Начало"
+                android:hint="Время*"
                 android:inputType="time"
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="13dp"
@@ -176,6 +181,7 @@
                 tools:ignore="HardcodedText" />
 
             <EditText
+                android:visibility="gone"
                 android:id="@+id/timeEnd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -195,6 +201,7 @@
         </LinearLayout>
 
         <Switch
+            android:visibility="gone"
             android:id="@+id/switchDailyEvent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -209,21 +216,22 @@
             android:layout_marginTop="8dp"/>
 
         <androidx.appcompat.widget.SwitchCompat
+            android:visibility="gone"
             android:id="@+id/switchRemind"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Напомнить"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edittext_background"
             android:fontFamily="@font/nunito_regular"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textAllCaps="false"
-            android:paddingVertical="13dp"
             android:gravity="start"
             android:paddingHorizontal="20dp"
-            android:background="@drawable/edittext_background"
+            android:paddingVertical="13dp"
+            android:text="Напомнить"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="18sp"
             android:thumbTint="@color/dark_green"
             android:trackTint="@color/switch_color"
-            android:layout_marginTop="8dp"
             tools:ignore="HardcodedText" />
 
         <LinearLayout

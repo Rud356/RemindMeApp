@@ -11,6 +11,14 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.remindmeapp.events.Date
+import com.example.remindmeapp.events.DateTime
+import com.example.remindmeapp.events.DbHelper
+import com.example.remindmeapp.events.Event
+import com.example.remindmeapp.events.Time
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class AddEventFragment : Fragment() {
 
@@ -30,10 +38,9 @@ class AddEventFragment : Fragment() {
         val eventTextTxt: EditText = view.findViewById(R.id.editTextNotification)
         dateInput = view.findViewById(R.id.editTextDate)
         val eventStartTxt: EditText = view.findViewById(R.id.timeStart)
-        val eventEndTxt: EditText = view.findViewById(R.id.timeEnd)
+        val colorPicker: ColorPickerView = view.findViewById(R.id.color_picker)
 
         // Меняем дату на текущий день, если перешли с окна дня событий
-
         date = arguments?.getParcelable("date")
 
         if (date != null){
@@ -50,7 +57,7 @@ class AddEventFragment : Fragment() {
 
         saveEventBtn.setOnClickListener {
             // TODO: Логика добавления ивента в БД и на сервер
-            if (eventNameTxt.text.isEmpty() || date == null) {
+            if (eventNameTxt.text.isEmpty() || date == null || eventStartTxt.text.isEmpty()) {
                 Toast.makeText(
                     requireContext(),
                     "Необходимо заполнить все обязательные поля",
@@ -60,10 +67,25 @@ class AddEventFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val name = eventNameTxt.text
-            val text = eventTextTxt.text
+            try {
+                var formatter = DateTimeFormatter.ofPattern("HH:mm")
+                val time = LocalTime.parse(eventStartTxt.text, formatter)
 
-            FragmentSwitcher.backPress(requireActivity())
+                val name = eventNameTxt.text.toString()
+                val text = eventTextTxt.text.toString()
+                val color = colorPicker.getColor()
+                val dateTime : DateTime = DateTime(date!!, Time(time.hour, time.minute))
+                formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+                val currentTime = LocalDateTime.now().format(formatter)
+                val dbHelper = DbHelper(requireContext(), null)
+                dbHelper.addEvent(Event(0, name, text, color, currentTime, currentTime, LocalDateTime.parse(dateTime.toString(), formatter).format(formatter), false, 0, true))
+
+                FragmentSwitcher.backPress(requireActivity())
+            } catch (e: Exception){
+                Toast.makeText(requireContext(), "Некорректный формат времени", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
         }
 
         return view
@@ -76,7 +98,11 @@ class AddEventFragment : Fragment() {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
         val datePickerDialog = DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
-            date = Date(selectedDay, selectedMonth + 1, selectedYear) // Добавляем 1 к месяцу, т.к. он начинается с 0
+            date = Date(
+                selectedDay,
+                selectedMonth + 1,
+                selectedYear
+            ) // Добавляем 1 к месяцу, т.к. он начинается с 0
             dateInput.setText(date?.toStringDigits())
         }, year, month, day)
 

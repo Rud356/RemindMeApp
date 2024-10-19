@@ -15,7 +15,7 @@ object RegistrationService {
     fun getLoggedIn(context: Context) : Boolean {
         user = readUserFromJsonFile(context)
 
-        // TODO: каждый раз отправлять еще и запрос на сервер, если неактуально - удалять
+        // TODO: каждый раз отправлять еще и запрос на сервер, если неактуальные данные - удалять файл
 
         if (user != null)
             loggedIn = true

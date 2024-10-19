@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:text="time - time"
+            android:text="Время"
             android:layout_marginEnd="15dp"
             android:textColor="#909090"
             tools:ignore="HardcodedText" />
@@ -71,7 +71,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="cкоро"
+        android:text="сегодня"
         android:layout_gravity="center"
         android:gravity="end"
         android:textColor="#707070"

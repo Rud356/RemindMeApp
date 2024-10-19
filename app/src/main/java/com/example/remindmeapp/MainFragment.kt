@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
 import androidx.fragment.app.Fragment
+import com.example.remindmeapp.events.Date
 import java.util.Calendar
 
 class MainFragment : Fragment() {
@@ -20,7 +21,7 @@ class MainFragment : Fragment() {
         val view = inflater.inflate(R.layout.activity_main, container, false)
         val calendarView : CalendarView = view.findViewById(R.id.calendarView)
 
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+        calendarView.setOnDateChangeListener { cal, year, month, dayOfMonth ->
             date = Date(dayOfMonth, month, year)
         }
 
