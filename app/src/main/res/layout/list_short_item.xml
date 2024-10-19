@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:text="Время"
                 android:layout_marginEnd="15dp"
-                android:textColor="#909090"
+                android:textColor="@color/gray"
                 tools:ignore="HardcodedText" />
 
             <ImageView
