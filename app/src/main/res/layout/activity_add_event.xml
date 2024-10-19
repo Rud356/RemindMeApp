@@ -134,6 +134,7 @@
 
         <EditText
             android:id="@+id/editTextDate"
+            android:focusable="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -160,6 +161,7 @@
 
             <EditText
                 android:id="@+id/timeStart"
+                android:focusable="false"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

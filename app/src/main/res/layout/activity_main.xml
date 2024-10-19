@@ -54,6 +54,7 @@
             android:dividerHeight="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textSelectedDate" />
+            app:layout_constraintTop_toBottomOf="@+id/textSelectedDate"
+            tools:listitem="@layout/list_short_item"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

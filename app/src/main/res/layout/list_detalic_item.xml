@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_item"
     android:layout_margin="10dp"
+    android:id="@+id/background"
     android:paddingHorizontal="22dp">
 
     <LinearLayout
@@ -45,6 +46,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/item_date"
                 android:text="дд/мм/гггг"
                 android:textColor="@color/gray"
                 android:fontFamily="@font/nunito_regular"
@@ -70,6 +72,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/day_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="сегодня"

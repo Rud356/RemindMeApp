@@ -6,13 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
+import android.widget.ListView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.remindmeapp.events.Date
-import java.util.Calendar
+import com.example.remindmeapp.custom.DateFormatHelper
+import com.example.remindmeapp.custom.FragmentSwitcher
+import com.example.remindmeapp.events.DbHelper
+import java.time.LocalDate
 
 class MainFragment : Fragment() {
+    private lateinit var dbHelper: DbHelper
+    private lateinit var listView : ListView
 
-    private var date : Date = getCurrentDate();
+    private var date : LocalDate = LocalDate.now();
+    private lateinit var textSelectedDate : TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,15 +27,21 @@ class MainFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.activity_main, container, false)
         val calendarView : CalendarView = view.findViewById(R.id.calendarView)
+        listView = view.findViewById(R.id.listView)
+        textSelectedDate = view.findViewById(R.id.textSelectedDate)
 
-        calendarView.setOnDateChangeListener { cal, year, month, dayOfMonth ->
-            date = Date(dayOfMonth, month, year)
+        dbHelper = DbHelper(requireContext(), null)
+        updateSelectedDate()
+
+        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+            date = LocalDate.of(year, month + 1, dayOfMonth)
+            updateSelectedDate()
         }
 
         view.findViewById<View>(R.id.main).setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeTop() {
                 val bundle = Bundle()
-                bundle.putParcelable("date", date)
+                bundle.putString("date", date.format(DateFormatHelper.dateFormatter))
 
                 val dayEventsFragment = DayEventsFragment()
                 dayEventsFragment.arguments = bundle
@@ -40,12 +53,16 @@ class MainFragment : Fragment() {
         return view
     }
 
-    private fun getCurrentDate(): Date {
-        val calendar = Calendar.getInstance()
-        return Date(
-            calendar.get(Calendar.DAY_OF_MONTH),
-            calendar.get(Calendar.MONTH) + 1,  // Месяц от 0 до 11, поэтому добавляем 1
-            calendar.get(Calendar.YEAR)
-        )
+    private fun updateSelectedDate(){
+        val currentDate = LocalDate.now()
+
+        if (currentDate == date)
+            textSelectedDate.text = "Сегодня"
+        else
+            textSelectedDate.text = DateFormatHelper.toString(date)
+
+        val events = dbHelper.getEventsByDayAll(date, 4)
+        val adapter = EventShortAdapter(requireContext(), events)
+        listView.adapter = adapter
     }
 }

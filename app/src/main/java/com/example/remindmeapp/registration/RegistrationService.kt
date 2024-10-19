@@ -1,6 +1,7 @@
 package com.example.remindmeapp.registration
 
 import android.content.Context
+import com.example.remindmeapp.events.DbHelper
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -32,6 +33,11 @@ object RegistrationService {
     fun logOut(context: Context){
         loggedIn = false
         deleteFile(context)
+
+        val dbHelper = DbHelper(context, null)
+        val db = dbHelper.writableDatabase
+        db.delete("events", null, null)
+        db.close()
     }
 
     private fun writeUserToJsonFile(context: Context, user: User) {

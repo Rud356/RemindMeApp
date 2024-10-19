@@ -7,13 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.remindmeapp.events.Date
+import com.example.remindmeapp.custom.DateFormatHelper
+import com.example.remindmeapp.custom.FragmentSwitcher
+import com.example.remindmeapp.events.DbHelper
+import java.time.LocalDate
 
 class DayEventsFragment : Fragment() {
+    private lateinit var dbHelper: DbHelper
+    private lateinit var listView : ListView
 
-    private lateinit var date : Date
+    private lateinit var date : LocalDate
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,7 +32,27 @@ class DayEventsFragment : Fragment() {
         val back : ImageView = view.findViewById(R.id.back_view)
         val addEvent : Button = view.findViewById(R.id.addEventButton)
 
-        date = arguments?.getParcelable("date")!!
+        listView = view.findViewById(R.id.listDayEvents)
+        dbHelper = DbHelper(requireContext(), null)
+
+        val argDate = arguments?.getString("date")
+
+        if (argDate == null)
+        {
+            FragmentSwitcher.backPress(requireActivity())
+            return view
+        }
+
+        date = LocalDate.parse(argDate, DateFormatHelper.dateFormatter)
+
+        val events = dbHelper.getEventsByDayAll(date, -1)
+        val adapter = EventShortAdapter(requireContext(), events)
+        listView.adapter = adapter
+
+        if (date == LocalDate.now())
+            currentDateTxt.text = "Сегодня"
+        else
+            currentDateTxt.text = date.format(DateFormatHelper.dateFormatter)
 
         back.setOnClickListener {
             FragmentSwitcher.backPress(requireActivity())
@@ -34,7 +60,7 @@ class DayEventsFragment : Fragment() {
 
         addEvent.setOnClickListener {
             val bundle = Bundle()
-            bundle.putParcelable("date", date)
+            bundle.putString("date", date.format(DateFormatHelper.dateFormatter))
 
             val addEventFragment = AddEventFragment()
             addEventFragment.arguments = bundle
@@ -47,7 +73,6 @@ class DayEventsFragment : Fragment() {
             }
         })
 
-        currentDateTxt.text = date.toString()
 
         return view
     }

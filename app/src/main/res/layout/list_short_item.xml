@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_item"
     android:layout_margin="10dp"
+    android:id="@+id/background"
     android:paddingHorizontal="22dp">
 
     <LinearLayout

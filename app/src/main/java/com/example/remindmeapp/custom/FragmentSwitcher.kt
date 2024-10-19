@@ -1,9 +1,11 @@
-package com.example.remindmeapp
+package com.example.remindmeapp.custom
 
 import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import java.lang.IllegalStateException
+import kotlin.isInitialized
 
 object FragmentSwitcher {
     private lateinit var fragmentManager: FragmentManager

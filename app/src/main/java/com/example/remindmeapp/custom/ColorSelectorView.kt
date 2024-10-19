@@ -1,9 +1,14 @@
 package com.example.remindmeapp
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 
 class ColorPickerView @JvmOverloads constructor(
     context: Context,
@@ -65,7 +70,13 @@ class ColorPickerView @JvmOverloads constructor(
     }
 
     private fun getColorFromTag(imageView: ImageView): String {
-        val colorTag = imageView.tag as? String
-        return colorTag ?: "#000000" // Если tag не установлен, возвращаем черный
+        val background = imageView.background
+        if (background is GradientDrawable) {
+            val colorStateList = background.color
+            val colorInt = colorStateList?.defaultColor ?: 0
+            val color = String.format("#%06X", 0xFFFFFF and colorInt)
+            return color
+        }
+        return "#000000" // Если не нашли подходящий Drawable, возвращаем черный цвет
     }
 }
