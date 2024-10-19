@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
-    android:background="#F0F2F7">
+    android:background="@color/smoky_blue">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="25dp"
-            android:background="#F0F2F7"
+            android:background="@color/smoky_blue"
             android:dateTextAppearance="@style/DateTextStyle"
             android:weekDayTextAppearance="@style/WeekDayTextStyle"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,7 @@
             android:layout_marginBottom="20dp"
             android:fontFamily="@font/nunito_regular"
             android:text="Сегодня"
-            android:textColor="#222B45"
+            android:textColor="@color/blue"
             android:textSize="28sp"
             app:layout_constraintBottom_toTopOf="@+id/listView"
             app:layout_constraintStart_toStartOf="parent"

@@ -31,9 +31,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:text="time - time"
+            android:text="time"
             android:layout_marginEnd="15dp"
-            android:textColor="#909090"
+            android:textColor="@color/gray"
             tools:ignore="HardcodedText" />
 
         <LinearLayout
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="дд/мм/гггг"
-                android:textColor="#707070"
+                android:textColor="@color/gray"
                 android:fontFamily="@font/nunito_regular"
                 android:textSize="16sp"
                 android:layout_marginEnd="15dp"
@@ -71,10 +71,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="cкоро"
+        android:text="сегодня"
         android:layout_gravity="center"
         android:gravity="end"
-        android:textColor="#707070"
+        android:textColor="@color/gray"
         android:fontFamily="@font/nunito_regular"
         android:textSize="16sp"
         tools:ignore="HardcodedText" />
