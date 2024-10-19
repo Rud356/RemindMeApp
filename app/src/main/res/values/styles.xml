@@ -13,4 +13,9 @@
         <item name="android:fontFamily">@font/nunito_regular</item>                <!-- Шрифт -->
         <item name="android:padding">10dp</item>
     </style>
+    <style name="CalenderViewCustom" parent="Theme.AppCompat">
+        <item name="colorControlActivated">@color/light_green</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
 </resources>

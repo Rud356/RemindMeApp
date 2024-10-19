@@ -7,4 +7,6 @@
     <string name="form_input_password">Введите пароль</string>
     <string name="form_input_repeat_password">Повторите пароль</string>
     <string name="form_input_login">Введите логин</string>
+    <string name="navigation_drawer_open">Открыть навигацию</string>
+    <string name="navigation_drawer_close">Закрыть навигацию</string>
 </resources>

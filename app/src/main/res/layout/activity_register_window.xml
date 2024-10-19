@@ -65,6 +65,7 @@
                 android:textColorHint="@color/gray"
                 android:textSize="18sp"
                 android:hint="@string/form_input_ip"
+                android:text="192.168.0.1"
                 android:inputType="text"
                 android:paddingVertical="10dp"
                 android:paddingStart="20dp"
@@ -88,10 +89,8 @@
                 android:paddingStart="20dp"
                 tools:ignore="RtlSymmetry" />
 
-
-
             <EditText
-                android:id="@+id/editTextTextPassword"
+                android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -109,7 +108,7 @@
                 tools:ignore="RtlSymmetry" />
 
             <EditText
-                android:id="@+id/editTextTextConfirmPassword"
+                android:id="@+id/editTextConfirmPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -174,15 +173,7 @@
                 tools:ignore="HardcodedText"
                 android:textColor="@color/blue"/>
 
-
         </LinearLayout>
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
-
