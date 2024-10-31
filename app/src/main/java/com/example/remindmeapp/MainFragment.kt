@@ -32,6 +32,8 @@ class MainFragment : Fragment() {
 
         dbHelper = DbHelper(requireContext(), null)
         updateSelectedDate()
+        calendarView.setDate(DateFormatHelper.toLong(date));
+        calendarView.minDate = DateFormatHelper.toLong(LocalDate.now());
 
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             date = LocalDate.of(year, month + 1, dayOfMonth)
@@ -40,17 +42,21 @@ class MainFragment : Fragment() {
 
         view.findViewById<View>(R.id.main).setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeTop() {
-                val bundle = Bundle()
-                bundle.putString("date", date.format(DateFormatHelper.dateFormatter))
-
-                val dayEventsFragment = DayEventsFragment()
-                dayEventsFragment.arguments = bundle
-
-                FragmentSwitcher.replaceFragmentWithAnim(dayEventsFragment, R.anim.slide_in_bottom, R.anim.slide_out_top)
+                FragmentSwitcher.replaceFragmentWithAnim(createDayEvents(), R.anim.slide_in_bottom, R.anim.slide_out_top)
             }
         })
 
+        FragmentSwitcher.mainFragment = this
         return view
+    }
+
+    private fun createDayEvents() : DayEventsFragment {
+        val bundle = Bundle()
+        bundle.putString("date", date.format(DateFormatHelper.dateFormatter))
+
+        val dayEventsFragment = DayEventsFragment()
+        dayEventsFragment.arguments = bundle
+        return dayEventsFragment
     }
 
     private fun updateSelectedDate(){

@@ -68,6 +68,14 @@
                 android:layout_height="20dp"
                 android:src="@drawable/ic_repeat"
                 android:layout_marginEnd="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/periodTime"
+                android:textColor="@color/gray"
+                android:fontFamily="@font/nunito_regular"
+                android:text="1" />
         </LinearLayout>
     </LinearLayout>
 

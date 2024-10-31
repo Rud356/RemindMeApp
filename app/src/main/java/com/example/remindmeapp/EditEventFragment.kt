@@ -21,22 +21,26 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class AddEventFragment : Fragment() {
+class EditEventFragment : Fragment() {
 
     private lateinit var date : LocalDate
     private lateinit var time : LocalTime
+
+    private lateinit var event : Event
 
     private lateinit var dateInput : EditText
     private lateinit var timeInput : EditText
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.activity_add_event, container, false)
+        val view = inflater.inflate(R.layout.activity_edit_event, container, false)
 
         val backView: ImageView = view.findViewById(R.id.imageButtonBack)
-        val saveEventBtn: Button = view.findViewById(R.id.buttonSave)
+        val deleteEventBtn: Button = view.findViewById(R.id.buttonDelete)
+        val editEventBtn: Button = view.findViewById(R.id.buttonEdit)
 
         val colorPicker: ColorPickerView = view.findViewById(R.id.colorPicker)
         val repeatSelector: RepeatSelectorView = view.findViewById(R.id.repeatSelector)
@@ -45,18 +49,28 @@ class AddEventFragment : Fragment() {
         dateInput = view.findViewById(R.id.editTextDate)
         timeInput = view.findViewById(R.id.timeStart)
 
-        // Меняем дату на текущий день, если перешли с окна дня событий
-        val argDate = arguments?.getString("date")
+        val dbHelper = DbHelper(requireContext(), null)
+        val argEventId = arguments?.getInt("eventId")
 
-        if (argDate != null){
-            date = LocalDate.parse(argDate, DateFormatHelper.dateFormatter)
-        }
-        else {
-           date = LocalDate.now()
+        if (argEventId == null)
+            FragmentSwitcher.backPress(requireActivity())
+
+        val argEvent = dbHelper.getEventById(argEventId!!)
+        if (argEvent == null) {
+            FragmentSwitcher.backPress(requireActivity())
         }
 
-        time = LocalTime.now()
+        event = argEvent!!
+        // TODO: Написать сеттер для повтора
+        colorPicker.setColor(event.color)
+        repeatSelector.setOption(event.triggeredPeriod)
+        eventNameTxt.setText(event.name);
+        eventTextTxt.setText(event.descr);
+        date = LocalDateTime.parse(event.triggeredAt).toLocalDate()
+        time = LocalDateTime.parse(event.triggeredAt).toLocalTime()
+
         updateDateText()
+        updateTimeText()
 
         dateInput.setOnClickListener {
             showDatePickerDialog()
@@ -70,7 +84,12 @@ class AddEventFragment : Fragment() {
             FragmentSwitcher.backPress(requireActivity())
         }
 
-        saveEventBtn.setOnClickListener {
+        deleteEventBtn.setOnClickListener {
+            dbHelper.deleteEventById(event.id)
+            FragmentSwitcher.backPress(requireActivity())
+        }
+
+        editEventBtn.setOnClickListener {
             // TODO: Логика добавления ивента в БД и на сервер
             if (eventNameTxt.text.isEmpty() || dateInput.text.isEmpty() || timeInput.text.isEmpty()) {
                 Toast.makeText(requireContext(), "Необходимо заполнить все обязательные поля", Toast.LENGTH_SHORT).show()
@@ -78,16 +97,15 @@ class AddEventFragment : Fragment() {
             }
 
             try {
-                val name = eventNameTxt.text.toString()
-                val text = eventTextTxt.text.toString()
-                val color = colorPicker.getColor()
-                val dateTime : LocalDateTime = LocalDateTime.of(date, time)
-                val currentTime = LocalDateTime.now().toString()
-                val triggeredPeriod = repeatSelector.getSelectedOption()
-                val isPeriodic = triggeredPeriod > 0
+                event.name = eventNameTxt.text.toString()
+                event.descr = eventTextTxt.text.toString()
+                event.color = colorPicker.getColor()
+                event.triggeredAt = LocalDateTime.of(date, time).toString()
+                event.editedAt = LocalDateTime.now().toString()
+                event.triggeredPeriod = repeatSelector.getSelectedOption()
+                event.isPeriodic = event.triggeredPeriod > 0
 
-                val dbHelper = DbHelper(requireContext(), null)
-                dbHelper.addEvent(Event(0, name, text, color, currentTime, currentTime, dateTime.toString(), isPeriodic, triggeredPeriod, true))
+                dbHelper.updateEvent(event)
 
                 FragmentSwitcher.backPress(requireActivity())
             } catch (e: Exception){
@@ -133,5 +151,9 @@ class AddEventFragment : Fragment() {
         )
 
         timePickerDialog.show()
+    }
+
+    private fun updateTimeText(){
+        timeInput.setText(TimeFormatHelper.toString(time))
     }
 }

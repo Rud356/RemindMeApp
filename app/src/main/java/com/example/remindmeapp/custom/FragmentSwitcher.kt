@@ -4,12 +4,14 @@ import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.example.remindmeapp.MainFragment
 import java.lang.IllegalStateException
 import kotlin.isInitialized
 
 object FragmentSwitcher {
     private lateinit var fragmentManager: FragmentManager
     private var containerId: Int = 0
+    lateinit var mainFragment : MainFragment
 
     fun initialize(fragmentManager: FragmentManager, containerId: Int) {
         this.fragmentManager = fragmentManager

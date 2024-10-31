@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.example.remindmeapp.custom.DateFormatHelper
 import com.example.remindmeapp.custom.DateTimeFormatHelper
+import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.custom.TimeFormatHelper
 import com.example.remindmeapp.events.Event
 import java.time.LocalDateTime
@@ -31,18 +33,31 @@ class EventShortAdapter(private val context: Context, private val events: List<E
         val itemText = view.findViewById<TextView>(R.id.itemText)
         val itemTime = view.findViewById<TextView>(R.id.itemTime)
         val iconRepeat = view.findViewById<ImageView>(R.id.iconSecond)
+        val textRepeat = view.findViewById<TextView>(R.id.periodTime)
 
         if (event == null)
             return view
+
+        view.findViewById<LinearLayout>(R.id.background).setOnClickListener {
+            val bundle = Bundle()
+            bundle.putInt("eventId", event.id)
+
+            val editEventFragment = EditEventFragment()
+            editEventFragment.arguments = bundle
+            FragmentSwitcher.replaceFragment(editEventFragment)
+        }
 
         val triggeredAt = LocalDateTime.parse(event.triggeredAt)
 
         itemText.text = event.name
         itemTime.text = triggeredAt.format(TimeFormatHelper.timeFormatter)
-        iconRepeat.visibility = if (event.isPeriodic == true){
-            View.VISIBLE
+
+        if (event.isPeriodic == true){
+            iconRepeat.visibility = View.VISIBLE
+            textRepeat.setText(event.triggeredPeriod.toString())
         } else{
-            View.GONE
+            iconRepeat.visibility = View.GONE
+            textRepeat.setText("")
         }
 
         val linearLayout: LinearLayout = view.findViewById(R.id.background)

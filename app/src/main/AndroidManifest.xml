@@ -34,6 +34,4 @@
         <activity android:name="com.example.remindmeapp.MainActivity" />
 
     </application>
-
-
 </manifest>

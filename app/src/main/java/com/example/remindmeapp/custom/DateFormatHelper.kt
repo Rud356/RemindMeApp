@@ -1,6 +1,7 @@
 package com.example.remindmeapp.custom
 
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -13,5 +14,9 @@ object DateFormatHelper {
 
     fun toString(date : LocalDate) : String {
         return date.format(dateFormatter)
+    }
+
+    fun toLong(date: LocalDate) : Long {
+        return date.atStartOfDay(ZoneOffset.systemDefault()).toInstant().toEpochMilli()
     }
 }

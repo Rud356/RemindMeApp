@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayoutRepeat"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10dp"
+    android:layout_marginTop="8dp"
+    app:flexWrap="wrap"
+    app:justifyContent="center">
+
+    <Button
+        android:id="@+id/buttonNotRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:backgroundTint="@color/light_green"
+        android:text="Не повторять"
+        android:fontFamily="@font/nunito_regular"
+        android:textSize="14sp"
+        android:textColor="@color/static_white"
+        android:paddingHorizontal="10dp"
+        android:layout_marginEnd="5dp"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/buttonDayRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:backgroundTint="@color/light_green_back"
+        android:text="Ежедневно"
+        android:fontFamily="@font/nunito_regular"
+        android:textSize="14sp"
+        android:textColor="@color/dark_gray"
+        android:paddingHorizontal="10dp"
+        android:layout_marginEnd="5dp"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/buttonWeekRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:backgroundTint="@color/light_green_back"
+        android:text="Еженедельно"
+        android:fontFamily="@font/nunito_regular"
+        android:textSize="14sp"
+        android:textColor="@color/dark_gray"
+        android:paddingHorizontal="10dp"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/buttonMonthRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:backgroundTint="@color/light_green_back"
+        android:text="Ежемесячно"
+        android:fontFamily="@font/nunito_regular"
+        android:textSize="14sp"
+        android:textColor="@color/dark_gray"
+        android:paddingHorizontal="10dp"
+        android:layout_marginEnd="5dp"
+        tools:ignore="ButtonStyle,HardcodedText" />
+
+    <Button
+        android:id="@+id/buttonYearRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:backgroundTint="@color/light_green_back"
+        android:text="Ежегодно"
+        android:fontFamily="@font/nunito_regular"
+        android:textSize="14sp"
+        android:textColor="@color/dark_gray"
+        android:paddingHorizontal="10dp"
+        tools:ignore="ButtonStyle,HardcodedText" />
+</com.google.android.flexbox.FlexboxLayout>

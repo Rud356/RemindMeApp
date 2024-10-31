@@ -69,10 +69,9 @@ class DayEventsFragment : Fragment() {
 
         view.findViewById<View>(R.id.day_events).setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeBottom() {
-                FragmentSwitcher.replaceFragmentWithAnim(MainFragment(), R.anim.slide_in_top, R.anim.slide_out_bottom)
+                FragmentSwitcher.replaceFragmentWithAnim(FragmentSwitcher.mainFragment, R.anim.slide_in_top, R.anim.slide_out_bottom)
             }
         })
-
 
         return view
     }

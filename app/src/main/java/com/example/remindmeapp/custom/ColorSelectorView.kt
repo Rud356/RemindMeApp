@@ -20,6 +20,8 @@ class ColorPickerView @JvmOverloads constructor(
     private var defaultHeight : Int = 35
     private var selectedImageView: ImageView? = null
 
+    private val colorList = mutableListOf<String>()
+
     override fun onFinishInflate() {
         super.onFinishInflate()
         setupImageViews()
@@ -38,6 +40,7 @@ class ColorPickerView @JvmOverloads constructor(
             val child = getChildAt(i)
 
             if (child is ImageView) {
+                colorList.add(getColor(child))
                 child.setOnClickListener {
                     handleImageClick(child)
                 }
@@ -65,11 +68,23 @@ class ColorPickerView @JvmOverloads constructor(
         selectedImageView = imageView
     }
 
-    fun getColor() : String {
-        return getColorFromTag(selectedImageView!!)
+    fun setColor(color: String) {
+        val index = colorList.indexOf(color)
+
+        if (index == -1)
+            return
+
+        val imageView = getChildAt(index) as? ImageView
+        imageView?.let {
+            handleImageClick(it)
+        }
     }
 
-    private fun getColorFromTag(imageView: ImageView): String {
+    fun getColor() : String {
+        return getColor(selectedImageView!!)
+    }
+
+    private fun getColor(imageView: ImageView): String {
         val background = imageView.background
         if (background is GradientDrawable) {
             val colorStateList = background.color
@@ -79,4 +94,5 @@ class ColorPickerView @JvmOverloads constructor(
         }
         return "#000000" // Если не нашли подходящий Drawable, возвращаем черный цвет
     }
+
 }

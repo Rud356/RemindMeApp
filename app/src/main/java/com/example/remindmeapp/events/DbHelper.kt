@@ -42,6 +42,58 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         db.close()
     }
 
+    fun deleteEventById(id: Int): Int {
+        val db = this.writableDatabase
+        val result = db.delete("events", "id = ?", arrayOf(id.toString()))
+        db.close()
+        return result
+    }
+
+    fun getEventById(id: Int): Event? {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM events WHERE id = ?", arrayOf(id.toString()))
+
+        var event: Event? = null
+        if (cursor.moveToFirst()) {
+            event = Event(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                descr = cursor.getString(cursor.getColumnIndexOrThrow("descr")),
+                color = cursor.getString(cursor.getColumnIndexOrThrow("color")),
+                createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt")),
+                editedAt = cursor.getString(cursor.getColumnIndexOrThrow("editedAt")),
+                triggeredAt = cursor.getString(cursor.getColumnIndexOrThrow("triggeredAt")),
+                isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow("isPeriodic")) > 0,
+                triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow("triggeredPeriod")),
+                isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) > 0
+            )
+        }
+
+        cursor.close()
+        db.close()
+        return event
+    }
+
+    fun updateEvent(event: Event): Int {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put("name", event.name)
+            put("descr", event.descr)
+            put("color", event.color)
+            put("createdAt", event.createdAt.toString())
+            put("editedAt", event.editedAt.toString())
+            put("triggeredAt", event.triggeredAt.toString())
+            put("isPeriodic", event.isPeriodic)
+            put("triggeredPeriod", event.triggeredPeriod)
+            put("isActive", event.isActive)
+        }
+
+        // Выполняем обновление записи по id
+        val result = db.update("events", values, "id = ?", arrayOf(event.id.toString()))
+        db.close()
+        return result
+    }
+
     fun getAllEvents(): List<Event> {
         val db = this.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM events ORDER BY triggeredAt ASC", null)
