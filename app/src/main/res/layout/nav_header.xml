@@ -2,10 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="wrap_content"
     android:gravity="top"
-    android:padding="16dp"
-    android:background="@color/smoky_blue"
+    android:paddingTop="50sp"
+    android:paddingBottom="40sp"
+    android:background="@color/light_green"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
@@ -13,7 +14,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:text="@string/app_name"
-        android:textColor="@color/dark_green"
+        android:textColor="@color/white"
         android:fontFamily="@font/nunito_bold"
         android:textSize="32sp"
         android:gravity="center" />

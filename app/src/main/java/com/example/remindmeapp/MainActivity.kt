@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.registration.RegistrationService
 
@@ -43,14 +44,19 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_user -> {
                     Toast.makeText(this, "Профиль выбран ${RegistrationService.user?.username}", Toast.LENGTH_SHORT).show()
                 }
+                R.id.nav_calendar -> {
+                    FragmentSwitcher.replaceFragment(FragmentSwitcher.mainFragment)
+                }
                 R.id.nav_events -> {
                     FragmentSwitcher.replaceFragment(AllEventsFragment())
                 }
                 R.id.nav_exit -> {
-                    // TODO: Выход из профиля
                     RegistrationService.logOut(this)
                     intent = Intent(this, LoadingActivity::class.java)
                     startActivity(intent)
+                    finish()
+                }
+                R.id.nav_close -> {
                     finish()
                 }
             }
@@ -62,6 +68,15 @@ class MainActivity : AppCompatActivity() {
         // Загружаем основной контент из activity_main.xml
         if (savedInstanceState == null) {
             FragmentSwitcher.replaceFragment(MainFragment(), false)
+        }
+    }
+
+    @Override
+    override fun onBackPressed() {
+        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            this.drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 }
