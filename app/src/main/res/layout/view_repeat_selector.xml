@@ -7,8 +7,20 @@
     android:layout_height="wrap_content"
     android:paddingHorizontal="10dp"
     android:layout_marginTop="8dp"
+    android:paddingBottom="8dp"
     app:flexWrap="wrap"
     app:justifyContent="center">
+
+    <TextView
+        android:id="@+id/textOfNotificationInAnHour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/notification_text"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/gray"
+        android:fontFamily="@font/nunito_regular"
+        android:textAlignment="center"/>
 
     <Button
         android:id="@+id/buttonNotRepeat"
