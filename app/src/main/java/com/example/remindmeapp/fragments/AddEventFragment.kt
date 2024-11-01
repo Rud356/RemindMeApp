@@ -16,6 +16,7 @@ import com.example.remindmeapp.ColorPickerView
 import com.example.remindmeapp.R
 import com.example.remindmeapp.RepeatSelectorView
 import com.example.remindmeapp.custom.DateFormatHelper
+import com.example.remindmeapp.custom.DateTimeFormatHelper
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.custom.TimeFormatHelper
 import com.example.remindmeapp.events.DbHelper
@@ -75,7 +76,6 @@ class AddEventFragment : Fragment() {
         }
 
         saveEventBtn.setOnClickListener {
-            // TODO: Логика добавления ивента в БД и на сервер
             if (eventNameTxt.text.isEmpty() || dateInput.text.isEmpty() || timeInput.text.isEmpty()) {
                 Toast.makeText(requireContext(), "Необходимо заполнить все обязательные поля", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -86,17 +86,21 @@ class AddEventFragment : Fragment() {
                 val text = eventTextTxt.text.toString()
                 val color = colorPicker.getColor()
                 val dateTime : LocalDateTime = LocalDateTime.of(date, time)
-                val currentTime = LocalDateTime.now().toString()
+                val currentTime = DateTimeFormatHelper.toZoneString(LocalDateTime.now())
+                println(currentTime)
+                println(DateTimeFormatHelper.toZoneString(dateTime))
                 val triggeredPeriod = repeatSelector.getSelectedOption()
                 val isPeriodic = triggeredPeriod > 0
 
+                // TODO: Логика добавления ивента в БД и на сервер
                 val dbHelper = DbHelper(requireContext(), null)
                 dbHelper.addEvent(
-                    Event(0, name, text, color, currentTime, currentTime, dateTime.toString(), isPeriodic, triggeredPeriod)
+                    Event(0, name, text, color, currentTime, currentTime, DateTimeFormatHelper.toZoneString(dateTime), isPeriodic, triggeredPeriod)
                 )
 
                 FragmentSwitcher.backPress(requireActivity())
             } catch (e: Exception){
+                println(e.stackTrace)
                 Toast.makeText(requireContext(), "Некорректные данные", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

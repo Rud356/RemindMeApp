@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.remindmeapp.custom.DateTimeFormatHelper
 import com.example.remindmeapp.remind.ReminderApplication
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -155,7 +156,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     }
 
     private fun updateEventTrigger(event: Event) : Event? {
-        val triggeredAt = LocalDateTime.parse(event.triggeredAt)
+        val triggeredAt = DateTimeFormatHelper.parseZone(event.triggeredAt)
         val currentDateTime = LocalDateTime.now()
 
         if (triggeredAt.isBefore(currentDateTime)) {
@@ -173,8 +174,8 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                 }
 
                 println("Old triggered time = ${triggeredAt}, new triggered time = $newTriggeredAt updated.")
-                event.triggeredAt = newTriggeredAt.toString()
-                event.editedAt = LocalDateTime.now().toString()
+                event.triggeredAt = DateTimeFormatHelper.toZoneString(newTriggeredAt)
+                event.editedAt = DateTimeFormatHelper.toZoneString(LocalDateTime.now())
                 updateEvent(event)
             } else {
                 println("Event with ${event.id} deleted.")

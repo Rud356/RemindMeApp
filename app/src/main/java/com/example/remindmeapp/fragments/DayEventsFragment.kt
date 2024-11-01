@@ -20,6 +20,7 @@ import java.time.LocalDate
 class DayEventsFragment : Fragment() {
     private lateinit var dbHelper: DbHelper
     private lateinit var listView : ListView
+    private lateinit var unsubscribe : () -> Unit
 
     private var date : LocalDate = LocalDate.now()
 
@@ -61,12 +62,12 @@ class DayEventsFragment : Fragment() {
             val bundle = Bundle()
             bundle.putString("date", date.format(DateFormatHelper.dateFormatter))
 
-            val addEventFragment = FragmentSwitcher.AddEventFragment
+            val addEventFragment = AddEventFragment()
             addEventFragment.arguments = bundle
             FragmentSwitcher.replaceFragment(addEventFragment)
         }
 
-        FragmentSwitcher.onEventTriggered {
+        unsubscribe = FragmentSwitcher.onEventTriggered {
             if (context != null) {
                 updateEvents()
             }
@@ -82,6 +83,11 @@ class DayEventsFragment : Fragment() {
         })
 
         return view
+    }
+
+    override fun onDestroyView() {
+        unsubscribe()
+        super.onDestroyView()
     }
 
     private fun updateEvents(){

@@ -13,11 +13,11 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.remindmeapp.custom.DateTimeFormatHelper
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.custom.TimeFormatHelper
 import com.example.remindmeapp.events.Event
 import com.example.remindmeapp.fragments.EditEventFragment
-import java.time.LocalDateTime
 
 class EventShortAdapter(private val context: Context, private val events: List<Event>) : ArrayAdapter<Event>(context, 0, events) {
 
@@ -38,12 +38,12 @@ class EventShortAdapter(private val context: Context, private val events: List<E
             val bundle = Bundle()
             bundle.putInt("eventId", event.id)
 
-            val editEventFragment = FragmentSwitcher.EditEventFragment
+            val editEventFragment = EditEventFragment()
             editEventFragment.arguments = bundle
             FragmentSwitcher.replaceFragment(editEventFragment)
         }
 
-        val triggeredAt = LocalDateTime.parse(event.triggeredAt)
+        val triggeredAt = DateTimeFormatHelper.parseZone(event.triggeredAt)
 
         itemText.text = event.name
         itemTime.text = triggeredAt.format(TimeFormatHelper.timeFormatter)
