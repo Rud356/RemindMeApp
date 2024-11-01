@@ -1,4 +1,4 @@
-package com.example.remindmeapp
+package com.example.remindmeapp.fragments
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -12,6 +12,9 @@ import android.widget.ImageView
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.remindmeapp.ColorPickerView
+import com.example.remindmeapp.R
+import com.example.remindmeapp.RepeatSelectorView
 import com.example.remindmeapp.custom.DateFormatHelper
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.custom.TimeFormatHelper
@@ -20,6 +23,7 @@ import com.example.remindmeapp.events.Event
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.text.isEmpty
 
 class AddEventFragment : Fragment() {
 
@@ -45,18 +49,18 @@ class AddEventFragment : Fragment() {
         dateInput = view.findViewById(R.id.editTextDate)
         timeInput = view.findViewById(R.id.timeStart)
 
-        // Меняем дату на текущий день, если перешли с окна дня событий
+        // Меняем дату на выбранный день, если перешли с окна дня событий
         val argDate = arguments?.getString("date")
 
         if (argDate != null){
             date = LocalDate.parse(argDate, DateFormatHelper.dateFormatter)
+            updateDateText()
         }
         else {
-           date = LocalDate.now()
+            date = LocalDate.now()
         }
 
         time = LocalTime.now()
-        updateDateText()
 
         dateInput.setOnClickListener {
             showDatePickerDialog()
@@ -87,7 +91,9 @@ class AddEventFragment : Fragment() {
                 val isPeriodic = triggeredPeriod > 0
 
                 val dbHelper = DbHelper(requireContext(), null)
-                dbHelper.addEvent(Event(0, name, text, color, currentTime, currentTime, dateTime.toString(), isPeriodic, triggeredPeriod, true))
+                dbHelper.addEvent(
+                    Event(0, name, text, color, currentTime, currentTime, dateTime.toString(), isPeriodic, triggeredPeriod)
+                )
 
                 FragmentSwitcher.backPress(requireActivity())
             } catch (e: Exception){
@@ -100,10 +106,17 @@ class AddEventFragment : Fragment() {
     }
 
     private fun showDatePickerDialog() {
-        val datePickerDialog = DatePickerDialog(requireContext(), R.style.DialogTheme, { _, selectedYear, selectedMonth, selectedDay ->
-            date = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay)
-            updateDateText()
-        }, this.date.year, this.date.month.value - 1, this.date.dayOfMonth)
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            R.style.DialogTheme,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                date = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay)
+                updateDateText()
+            },
+            this.date.year,
+            this.date.month.value - 1,
+            this.date.dayOfMonth
+        )
 
         datePickerDialog.datePicker.minDate = DateFormatHelper.toLong(LocalDate.now())
         datePickerDialog.show()
@@ -117,12 +130,15 @@ class AddEventFragment : Fragment() {
         val timePickerDialog = TimePickerDialog(
             requireContext(),
             { _: TimePicker, selectedHour: Int, selectedMinute: Int ->
-                val curTime = LocalTime.now()
-                val newTime = LocalTime.of(selectedHour, selectedMinute)
+                val curDateTime = LocalDateTime.now()
+                val newTime = LocalDateTime.of(date, LocalTime.of(selectedHour, selectedMinute))
 
-                if (newTime.isBefore(curTime))
-                {
-                    Toast.makeText(requireContext(), "Нельзя выбрать время, которое уже прошло", Toast.LENGTH_SHORT).show()
+                if (newTime.isBefore(curDateTime)) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Нельзя выбрать время, которое уже прошло",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@TimePickerDialog
                 }
 

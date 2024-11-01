@@ -4,14 +4,31 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.remindmeapp.remind.ReminderApplication
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?) :
-    SQLiteOpenHelper(context, "events.db", factory, 1) {
+class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?) : SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
+
+    companion object {
+        private const val DATABASE_NAME = "events.db"
+        private const val DATABASE_VERSION = 1
+
+        const val TABLE_NAME = "events"
+        const val COLUMN_ID = "id"
+        const val COLUMN_NAME = "name"
+        const val COLUMN_DESCR = "descr"
+        const val COLUMN_COLOR = "color"
+        const val COLUMN_CREATED_AT = "createdAt"
+        const val COLUMN_EDITED_AT = "editedAt"
+        const val COLUMN_TRIGGERED_AT = "triggeredAt"
+        const val COLUMN_IS_PERIODIC = "isPeriodic"
+        const val COLUMN_TRIGGERED_PERIOD = "triggeredPeriod"
+    }
+
     override fun onCreate(db: SQLiteDatabase?) {
-        val query = "CREATE TABLE events (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, descr TEXT, color TEXT, " +
-                "createdAt DATE, editedAt DATE, triggeredAt DATE, isPeriodic BOOLEAN, triggeredPeriod INTEGER, isActive BOOLEAN)"
+        val query = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_NAME TEXT, $COLUMN_DESCR TEXT, $COLUMN_COLOR TEXT, " +
+                "$COLUMN_CREATED_AT DATE, $COLUMN_EDITED_AT DATE, $COLUMN_TRIGGERED_AT DATE, $COLUMN_IS_PERIODIC BOOLEAN, $COLUMN_TRIGGERED_PERIOD INTEGER)"
 
         db!!.execSQL(query)
     }
@@ -21,51 +38,59 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         p1: Int,
         p2: Int,
     ) {
-        db!!.execSQL("DROP TABLE IF EXISTS events")
+        db!!.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db)
     }
 
     fun addEvent(event : Event){
         val values = ContentValues()
-        values.put("name", event.name)
-        values.put("descr", event.descr)
-        values.put("color", event.color)
-        values.put("createdAt", event.createdAt.toString())
-        values.put("editedAt", event.editedAt.toString())
-        values.put("triggeredAt", event.triggeredAt.toString())
-        values.put("isPeriodic", event.isPeriodic)
-        values.put("triggeredPeriod", event.triggeredPeriod)
-        values.put("isActive", event.isActive)
+        values.put(COLUMN_NAME, event.name)
+        values.put(COLUMN_DESCR, event.descr)
+        values.put(COLUMN_COLOR, event.color)
+        values.put(COLUMN_CREATED_AT, event.createdAt.toString())
+        values.put(COLUMN_EDITED_AT, event.editedAt.toString())
+        values.put(COLUMN_TRIGGERED_AT, event.triggeredAt.toString())
+        values.put(COLUMN_IS_PERIODIC, event.isPeriodic)
+        values.put(COLUMN_TRIGGERED_PERIOD, event.triggeredPeriod)
 
         val db = this.writableDatabase
-        db.insert("events", null, values)
+        val newId = db.insert(TABLE_NAME, null, values)
         db.close()
+
+        if (newId != -1L) {
+            event.id = newId.toInt()
+            ReminderApplication.alarmHelper.addEvent(event)
+        }
     }
 
     fun deleteEventById(id: Int): Int {
+        val eventToRemove = getEventById(id)
+
+        if (eventToRemove != null)
+            ReminderApplication.alarmHelper.removeEvent(eventToRemove)
+
         val db = this.writableDatabase
-        val result = db.delete("events", "id = ?", arrayOf(id.toString()))
+        val result = db.delete(TABLE_NAME, "$COLUMN_ID = ?", arrayOf(id.toString()))
         db.close()
         return result
     }
 
     fun getEventById(id: Int): Event? {
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM events WHERE id = ?", arrayOf(id.toString()))
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = ?", arrayOf(id.toString()))
 
         var event: Event? = null
         if (cursor.moveToFirst()) {
             event = Event(
-                id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                descr = cursor.getString(cursor.getColumnIndexOrThrow("descr")),
-                color = cursor.getString(cursor.getColumnIndexOrThrow("color")),
-                createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt")),
-                editedAt = cursor.getString(cursor.getColumnIndexOrThrow("editedAt")),
-                triggeredAt = cursor.getString(cursor.getColumnIndexOrThrow("triggeredAt")),
-                isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow("isPeriodic")) > 0,
-                triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow("triggeredPeriod")),
-                isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) > 0
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                descr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCR)),
+                color = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COLOR)),
+                createdAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)),
+                editedAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EDITED_AT)),
+                triggeredAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_AT)),
+                isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_PERIODIC)) > 0,
+                triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_PERIOD)),
             )
         }
 
@@ -75,46 +100,115 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     }
 
     fun updateEvent(event: Event): Int {
+        val eventToRemove = getEventById(event.id)
+
+        if (eventToRemove == null)
+            return -1
+
+        ReminderApplication.alarmHelper.removeEvent(eventToRemove)
+
         val db = this.writableDatabase
         val values = ContentValues().apply {
-            put("name", event.name)
-            put("descr", event.descr)
-            put("color", event.color)
-            put("createdAt", event.createdAt.toString())
-            put("editedAt", event.editedAt.toString())
-            put("triggeredAt", event.triggeredAt.toString())
-            put("isPeriodic", event.isPeriodic)
-            put("triggeredPeriod", event.triggeredPeriod)
-            put("isActive", event.isActive)
+            put(COLUMN_NAME, event.name)
+            put(COLUMN_DESCR, event.descr)
+            put(COLUMN_COLOR, event.color)
+            put(COLUMN_CREATED_AT, event.createdAt.toString())
+            put(COLUMN_EDITED_AT, event.editedAt.toString())
+            put(COLUMN_TRIGGERED_AT, event.triggeredAt.toString())
+            put(COLUMN_IS_PERIODIC, event.isPeriodic)
+            put(COLUMN_TRIGGERED_PERIOD, event.triggeredPeriod)
         }
 
         // Выполняем обновление записи по id
-        val result = db.update("events", values, "id = ?", arrayOf(event.id.toString()))
+        val result = db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(event.id.toString()))
         db.close()
+
+        ReminderApplication.alarmHelper.addEvent(event)
+
         return result
+    }
+
+    fun updateAllEvent() {
+        val db = this.writableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COLUMN_TRIGGERED_AT ASC", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val event = Event(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                    descr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCR)),
+                    color = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COLOR)),
+                    createdAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)),
+                    editedAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EDITED_AT)),
+                    triggeredAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_AT)),
+                    isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_PERIODIC)) > 0,
+                    triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_PERIOD)),
+                )
+
+                updateEventTrigger(event)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+    }
+
+    private fun updateEventTrigger(event: Event) : Event? {
+        val triggeredAt = LocalDateTime.parse(event.triggeredAt)
+        val currentDateTime = LocalDateTime.now()
+
+        if (triggeredAt.isBefore(currentDateTime)) {
+            if (event.isPeriodic) {
+                // Актуализация времени для периодических событий
+                var newTriggeredAt = triggeredAt
+                while (newTriggeredAt.isBefore(currentDateTime)) {
+                    newTriggeredAt = when (event.triggeredPeriod) {
+                        1 -> newTriggeredAt.plusDays(1)
+                        7 -> newTriggeredAt.plusWeeks(1)
+                        30 -> newTriggeredAt.plusMonths(1)
+                        365 -> newTriggeredAt.plusYears(1)
+                        else -> triggeredAt
+                    }
+                }
+
+                println("Old triggered time = ${triggeredAt}, new triggered time = $newTriggeredAt updated.")
+                event.triggeredAt = newTriggeredAt.toString()
+                event.editedAt = LocalDateTime.now().toString()
+                updateEvent(event)
+            } else {
+                println("Event with ${event.id} deleted.")
+                deleteEventById(event.id)
+                return null
+            }
+        }
+
+        return event
     }
 
     fun getAllEvents(): List<Event> {
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM events ORDER BY triggeredAt ASC", null)
-
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COLUMN_TRIGGERED_AT ASC", null)
         val events = mutableListOf<Event>()
 
         if (cursor.moveToFirst()) {
             do {
                 val event = Event(
-                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                    name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                    descr = cursor.getString(cursor.getColumnIndexOrThrow("descr")),
-                    color = cursor.getString(cursor.getColumnIndexOrThrow("color")),
-                    createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt")),
-                    editedAt = cursor.getString(cursor.getColumnIndexOrThrow("editedAt")),
-                    triggeredAt = cursor.getString(cursor.getColumnIndexOrThrow("triggeredAt")),
-                    isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow("isPeriodic")) > 0,
-                    triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow("triggeredPeriod")),
-                    isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) > 0,
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                    descr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCR)),
+                    color = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COLOR)),
+                    createdAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)),
+                    editedAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EDITED_AT)),
+                    triggeredAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_AT)),
+                    isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_PERIODIC)) > 0,
+                    triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_PERIOD)),
                 )
-                events.add(event)
+
+                var updatedEvent = updateEventTrigger(event)
+                if (updatedEvent != null)
+                    events.add(updatedEvent)
+
             } while (cursor.moveToNext())
         }
         cursor.close()
@@ -126,7 +220,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         // Форматируем дату в строку формата "yyyy-MM-dd" для сравнения только дня
         val dateString = date.toString()
 
-        var query = "SELECT * FROM events WHERE DATE(triggeredAt) = ? ORDER BY triggeredAt ASC"
+        var query = "SELECT * FROM $TABLE_NAME WHERE DATE($COLUMN_TRIGGERED_AT) = ? ORDER BY $COLUMN_TRIGGERED_AT ASC"
 
         // Добавляем LIMIT только если count >= 0
         val selectionArgs: Array<String> = if (count >= 0) {
@@ -136,24 +230,25 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
             arrayOf(dateString)
         }
         val cursor = db.rawQuery(query, selectionArgs)
-
         val events = mutableListOf<Event>()
 
         if (cursor.moveToFirst()) {
             do {
                 val event = Event(
-                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                    name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                    descr = cursor.getString(cursor.getColumnIndexOrThrow("descr")),
-                    color = cursor.getString(cursor.getColumnIndexOrThrow("color")),
-                    createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt")),
-                    editedAt = cursor.getString(cursor.getColumnIndexOrThrow("editedAt")),
-                    triggeredAt = cursor.getString(cursor.getColumnIndexOrThrow("triggeredAt")),
-                    isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow("isPeriodic")) > 0,
-                    triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow("triggeredPeriod")),
-                    isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) > 0
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                    descr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCR)),
+                    color = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COLOR)),
+                    createdAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)),
+                    editedAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EDITED_AT)),
+                    triggeredAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_AT)),
+                    isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_PERIODIC)) > 0,
+                    triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_PERIOD)),
                 )
-                events.add(event)
+
+                var updatedEvent = updateEventTrigger(event)
+                if (updatedEvent != null)
+                    events.add(updatedEvent)
             } while (cursor.moveToNext())
         }
         cursor.close()

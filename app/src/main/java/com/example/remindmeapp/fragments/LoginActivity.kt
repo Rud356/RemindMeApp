@@ -1,4 +1,4 @@
-package com.example.remindmeapp
+package com.example.remindmeapp.fragments
 
 import android.app.Activity
 import android.content.Intent
@@ -7,7 +7,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.example.remindmeapp.R
 import com.example.remindmeapp.registration.RegistrationService
+import kotlin.jvm.java
+import kotlin.text.trim
 
 class LoginActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,14 +1,10 @@
 package com.example.remindmeapp
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 
 class ColorPickerView @JvmOverloads constructor(
     context: Context,

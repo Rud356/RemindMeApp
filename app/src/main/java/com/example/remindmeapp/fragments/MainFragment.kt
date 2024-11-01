@@ -1,4 +1,4 @@
-package com.example.remindmeapp
+package com.example.remindmeapp.fragments
 
 import OnSwipeTouchListener
 import android.os.Bundle
@@ -9,6 +9,8 @@ import android.widget.CalendarView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.remindmeapp.EventShortAdapter
+import com.example.remindmeapp.R
 import com.example.remindmeapp.custom.DateFormatHelper
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.events.DbHelper
@@ -46,7 +48,6 @@ class MainFragment : Fragment() {
             }
         })
 
-        FragmentSwitcher.mainFragment = this
         return view
     }
 
@@ -54,7 +55,7 @@ class MainFragment : Fragment() {
         val bundle = Bundle()
         bundle.putString("date", date.format(DateFormatHelper.dateFormatter))
 
-        val dayEventsFragment = DayEventsFragment()
+        val dayEventsFragment = FragmentSwitcher.DayEventsFragment
         dayEventsFragment.arguments = bundle
         return dayEventsFragment
     }

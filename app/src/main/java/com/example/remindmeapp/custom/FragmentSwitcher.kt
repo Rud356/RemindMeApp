@@ -4,18 +4,34 @@ import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.example.remindmeapp.MainFragment
+import com.example.remindmeapp.fragments.AddEventFragment
+import com.example.remindmeapp.fragments.AllEventsFragment
+import com.example.remindmeapp.fragments.DayEventsFragment
+import com.example.remindmeapp.fragments.EditEventFragment
+import com.example.remindmeapp.fragments.MainFragment
 import java.lang.IllegalStateException
-import kotlin.isInitialized
 
 object FragmentSwitcher {
     private lateinit var fragmentManager: FragmentManager
     private var containerId: Int = 0
-    lateinit var mainFragment : MainFragment
+
+    val MainFragment : MainFragment = MainFragment()
+    val AddEventFragment : AddEventFragment = AddEventFragment()
+    val AllEventsFragment : AllEventsFragment = AllEventsFragment()
+    val DayEventsFragment : DayEventsFragment = DayEventsFragment()
+    val EditEventFragment : EditEventFragment = EditEventFragment()
+
+    private val subscribers = mutableListOf<() -> Unit>()
+
+    fun onEventTriggered(action: () -> Unit) = subscribers.add(action)
 
     fun initialize(fragmentManager: FragmentManager, containerId: Int) {
         this.fragmentManager = fragmentManager
         this.containerId = containerId
+    }
+
+    fun updateEvents(){
+        subscribers.forEach { it() }
     }
 
     fun replaceFragment(fragment: Fragment, addToBackStack: Boolean = true) {

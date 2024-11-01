@@ -17,6 +17,8 @@ import com.example.remindmeapp.custom.DateFormatHelper
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.custom.TimeFormatHelper
 import com.example.remindmeapp.events.Event
+import com.example.remindmeapp.fragments.EditEventFragment
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
@@ -41,7 +43,7 @@ class EventDetalicAdapter(private val context: Context, private val events: List
             val bundle = Bundle()
             bundle.putInt("eventId", event.id)
 
-            val editEventFragment = EditEventFragment()
+            val editEventFragment = FragmentSwitcher.EditEventFragment
             editEventFragment.arguments = bundle
             FragmentSwitcher.replaceFragment(editEventFragment)
         }
@@ -60,8 +62,8 @@ class EventDetalicAdapter(private val context: Context, private val events: List
             textRepeat.setText("")
         }
 
-        val currentDay = LocalDateTime.now()
-        val daysBetween = ChronoUnit.DAYS.between(currentDay, triggeredAt).toInt()
+        val currentDay = LocalDate.now()
+        val daysBetween = ChronoUnit.DAYS.between(currentDay, triggeredAt.toLocalDate()).toInt()
 
         if (daysBetween == 0)
             dayCount.text = "Сегодня"

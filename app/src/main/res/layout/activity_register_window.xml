@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/smoky_blue"
-    tools:context=".MainActivity">
+    tools:context=".fragments.MainActivity">
 
     <ImageButton
         android:id="@+id/imageButtonBack"

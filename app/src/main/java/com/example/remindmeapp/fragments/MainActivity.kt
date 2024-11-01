@@ -1,25 +1,50 @@
-package com.example.remindmeapp
+package com.example.remindmeapp.fragments
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.GravityCompat
+import com.example.remindmeapp.R
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.registration.RegistrationService
+import com.example.remindmeapp.remind.ReminderApplication
+import kotlin.jvm.java
 
 class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
 
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        isGranted: Boolean -> if (!isGranted){
+            Toast.makeText(this, "Необходимо дать разрешение на отправку уведомлений для корректной работы приложения", Toast.LENGTH_LONG).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_driwer)
         FragmentSwitcher.initialize(supportFragmentManager, R.id.fragment_container)
+
+
+        // Права на отправку уведомлений
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+            requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !ReminderApplication.alarmHelper.alarmManager.canScheduleExactAlarms()) {
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            startActivity(intent)
+        }
+
 
         // Настроить Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -45,10 +70,10 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Профиль выбран ${RegistrationService.user?.username}", Toast.LENGTH_SHORT).show()
                 }
                 R.id.nav_calendar -> {
-                    FragmentSwitcher.replaceFragment(FragmentSwitcher.mainFragment)
+                    FragmentSwitcher.replaceFragment(FragmentSwitcher.MainFragment)
                 }
                 R.id.nav_events -> {
-                    FragmentSwitcher.replaceFragment(AllEventsFragment())
+                    FragmentSwitcher.replaceFragment(FragmentSwitcher.AllEventsFragment)
                 }
                 R.id.nav_exit -> {
                     RegistrationService.logOut(this)
@@ -65,9 +90,8 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // Загружаем основной контент из activity_main.xml
         if (savedInstanceState == null) {
-            FragmentSwitcher.replaceFragment(MainFragment(), false)
+            FragmentSwitcher.replaceFragment(FragmentSwitcher.MainFragment, false)
         }
     }
 

@@ -1,7 +1,8 @@
-package com.example.remindmeapp
+package com.example.remindmeapp.fragments
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,10 @@ import android.widget.ImageView
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import com.example.remindmeapp.ColorPickerView
+import com.example.remindmeapp.R
+import com.example.remindmeapp.RepeatSelectorView
 import com.example.remindmeapp.custom.DateFormatHelper
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.custom.TimeFormatHelper
@@ -20,6 +25,7 @@ import com.example.remindmeapp.events.Event
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.text.isEmpty
 
 class EditEventFragment : Fragment() {
 
@@ -27,6 +33,7 @@ class EditEventFragment : Fragment() {
     private lateinit var time : LocalTime
 
     private lateinit var event : Event
+    private lateinit var dbHelper: DbHelper
 
     private lateinit var dateInput : EditText
     private lateinit var timeInput : EditText
@@ -49,7 +56,7 @@ class EditEventFragment : Fragment() {
         dateInput = view.findViewById(R.id.editTextDate)
         timeInput = view.findViewById(R.id.timeStart)
 
-        val dbHelper = DbHelper(requireContext(), null)
+        dbHelper = DbHelper(requireContext(), null)
         val argEventId = arguments?.getInt("eventId")
 
         if (argEventId == null)
@@ -89,6 +96,12 @@ class EditEventFragment : Fragment() {
             FragmentSwitcher.backPress(requireActivity())
         }
 
+        FragmentSwitcher.onEventTriggered {
+            if (context != null) {
+                updateEventInfo()
+            }
+        }
+
         editEventBtn.setOnClickListener {
             // TODO: Логика добавления ивента в БД и на сервер
             if (eventNameTxt.text.isEmpty() || dateInput.text.isEmpty() || timeInput.text.isEmpty()) {
@@ -109,6 +122,7 @@ class EditEventFragment : Fragment() {
 
                 FragmentSwitcher.backPress(requireActivity())
             } catch (e: Exception){
+                println(e)
                 Toast.makeText(requireContext(), "Некорректные данные", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -118,10 +132,17 @@ class EditEventFragment : Fragment() {
     }
 
     private fun showDatePickerDialog() {
-        val datePickerDialog = DatePickerDialog(requireContext(), R.style.DialogTheme, { _, selectedYear, selectedMonth, selectedDay ->
-            date = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay)
-            updateDateText()
-        }, this.date.year, this.date.month.value - 1, this.date.dayOfMonth)
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            R.style.DialogTheme,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                date = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay)
+                updateDateText()
+            },
+            this.date.year,
+            this.date.month.value - 1,
+            this.date.dayOfMonth
+        )
 
         datePickerDialog.datePicker.minDate = DateFormatHelper.toLong(LocalDate.now())
         datePickerDialog.show()
@@ -135,11 +156,10 @@ class EditEventFragment : Fragment() {
         val timePickerDialog = TimePickerDialog(
             requireContext(),
             { _: TimePicker, selectedHour: Int, selectedMinute: Int ->
-                val curTime = LocalTime.now()
-                val newTime = LocalTime.of(selectedHour, selectedMinute)
+                val curDateTime = LocalDateTime.now()
+                val newTime = LocalDateTime.of(date, LocalTime.of(selectedHour, selectedMinute))
 
-                if (newTime.isBefore(curTime))
-                {
+                if (newTime.isBefore(curDateTime)) {
                     Toast.makeText(requireContext(), "Нельзя выбрать время, которое уже прошло", Toast.LENGTH_SHORT).show()
                     return@TimePickerDialog
                 }
@@ -155,5 +175,15 @@ class EditEventFragment : Fragment() {
 
     private fun updateTimeText(){
         timeInput.setText(TimeFormatHelper.toString(time))
+    }
+
+    private fun updateEventInfo(){
+        if (requireContext() == null)
+            return
+
+        if (dbHelper.getEventById(event.id) == null) {
+            Toast.makeText(requireContext(), "Событие уже отработало и было удалено", Toast.LENGTH_SHORT).show()
+            FragmentSwitcher.backPress(requireActivity())
+        }
     }
 }

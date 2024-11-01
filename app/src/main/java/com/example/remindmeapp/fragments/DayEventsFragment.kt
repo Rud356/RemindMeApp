@@ -1,4 +1,4 @@
-package com.example.remindmeapp
+package com.example.remindmeapp.fragments
 
 import OnSwipeTouchListener
 import android.os.Bundle
@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.remindmeapp.EventShortAdapter
+import com.example.remindmeapp.R
 import com.example.remindmeapp.custom.DateFormatHelper
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.events.DbHelper
@@ -19,7 +21,7 @@ class DayEventsFragment : Fragment() {
     private lateinit var dbHelper: DbHelper
     private lateinit var listView : ListView
 
-    private lateinit var date : LocalDate
+    private var date : LocalDate = LocalDate.now()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,10 +46,7 @@ class DayEventsFragment : Fragment() {
         }
 
         date = LocalDate.parse(argDate, DateFormatHelper.dateFormatter)
-
-        val events = dbHelper.getEventsByDayAll(date, -1)
-        val adapter = EventShortAdapter(requireContext(), events)
-        listView.adapter = adapter
+        updateEvents()
 
         if (date == LocalDate.now())
             currentDateTxt.text = "Сегодня"
@@ -62,17 +61,32 @@ class DayEventsFragment : Fragment() {
             val bundle = Bundle()
             bundle.putString("date", date.format(DateFormatHelper.dateFormatter))
 
-            val addEventFragment = AddEventFragment()
+            val addEventFragment = FragmentSwitcher.AddEventFragment
             addEventFragment.arguments = bundle
             FragmentSwitcher.replaceFragment(addEventFragment)
         }
 
+        FragmentSwitcher.onEventTriggered {
+            if (context != null) {
+                updateEvents()
+            }
+            else {
+                println("Context for day events not found.")
+            }
+        }
+
         view.findViewById<View>(R.id.day_events).setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeBottom() {
-                FragmentSwitcher.replaceFragmentWithAnim(FragmentSwitcher.mainFragment, R.anim.slide_in_top, R.anim.slide_out_bottom)
+                FragmentSwitcher.replaceFragmentWithAnim(FragmentSwitcher.MainFragment, R.anim.slide_in_top, R.anim.slide_out_bottom)
             }
         })
 
         return view
+    }
+
+    private fun updateEvents(){
+        val events = dbHelper.getEventsByDayAll(date, -1)
+        val adapter = EventShortAdapter(requireContext(), events)
+        listView.adapter = adapter
     }
 }

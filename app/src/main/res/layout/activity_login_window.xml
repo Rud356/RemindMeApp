@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_window"
     android:background="@color/smoky_blue"
-    tools:context=".MainActivity">
+    tools:context=".fragments.MainActivity">
 
     <ImageButton
         android:visibility="gone"
