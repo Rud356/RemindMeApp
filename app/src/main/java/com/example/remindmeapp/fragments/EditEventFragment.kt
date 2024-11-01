@@ -1,5 +1,6 @@
 package com.example.remindmeapp.fragments
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -92,8 +93,7 @@ class EditEventFragment : Fragment() {
         }
 
         deleteEventBtn.setOnClickListener {
-            dbHelper.deleteEventById(event.id)
-            FragmentSwitcher.backPress(requireActivity())
+            showDeleteConfirmationDialog(event.id)
         }
 
         FragmentSwitcher.onEventTriggered {
@@ -129,6 +129,26 @@ class EditEventFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun showDeleteConfirmationDialog(eventId: Int) {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Подтверждение удаления")
+        alertDialogBuilder.setMessage("Вы действительно хотите удалить это событие?")
+
+        alertDialogBuilder.setPositiveButton("Да") { dialog, _ ->
+            // Удаляем событие
+            dbHelper.deleteEventById(eventId)
+            dialog.dismiss() // Закрываем диалог
+            FragmentSwitcher.backPress(requireActivity())
+        }
+
+        alertDialogBuilder.setNegativeButton("Нет") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 
     private fun showDatePickerDialog() {
