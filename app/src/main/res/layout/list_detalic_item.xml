@@ -13,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_weight="10"
         android:layout_marginVertical="10dp"
         android:gravity="start">
 
@@ -79,9 +80,13 @@
         </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
     <TextView
         android:id="@+id/day_count"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="сегодня"
         android:layout_gravity="center"
@@ -90,4 +95,6 @@
         android:fontFamily="@font/nunito_regular"
         android:textSize="16sp"
         tools:ignore="HardcodedText" />
+    </LinearLayout>
+
 </LinearLayout>
