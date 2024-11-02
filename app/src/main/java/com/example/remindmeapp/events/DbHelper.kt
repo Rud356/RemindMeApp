@@ -77,7 +77,17 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
 
     fun getEventById(id: Int): Event? {
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = ?", arrayOf(id.toString()))
+        val cursor = db.rawQuery(
+            "SELECT " +
+                    "$COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR," +
+                    "$COLUMN_COLOR, " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')), " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')), " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_TRIGGERED_AT, 'localtime')), " +
+                    "$COLUMN_IS_PERIODIC, $COLUMN_TRIGGERED_PERIOD" +
+                " FROM $TABLE_NAME WHERE $COLUMN_ID = ?",
+            arrayOf(id.toString())
+        )
 
         var event: Event? = null
         if (cursor.moveToFirst()) {
@@ -130,7 +140,16 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
 
     fun updateAllEvent() {
         val db = this.writableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COLUMN_TRIGGERED_AT ASC", null)
+        val cursor = db.rawQuery(
+            "SELECT " +
+                    "$COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR," +
+                    "$COLUMN_COLOR, " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')), " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')), " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_TRIGGERED_AT, 'localtime')), " +
+                    "$COLUMN_IS_PERIODIC, $COLUMN_TRIGGERED_PERIOD" +
+                    " FROM $TABLE_NAME ORDER BY $COLUMN_TRIGGERED_AT ASC",
+            null)
 
         if (cursor.moveToFirst()) {
             do {
@@ -188,7 +207,37 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
 
     fun getAllEvents(): List<Event> {
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COLUMN_TRIGGERED_AT ASC", null)
+        var query = """
+            SELECT
+                $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS CreatedAt,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS EditedAt,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(
+                    julianday($COLUMN_TRIGGERED_AT + NextTriggerStep, 'localtime')
+                ) AS TriggeredAt,
+                $COLUMN_IS_PERIODIC,
+                $COLUMN_TRIGGERED_PERIOD,
+                CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER) AS NextEventInDays,
+                datetime($COLUMN_TRIGGERED_AT, 'localtime') as RealTrigger
+            FROM (
+                SELECT *,
+                CASE
+                    WHEN ABS(DateDiff) <= 1 THEN
+                      CAST(ABS(DateDiff) AS INTEGER)
+                    ELSE
+                      CAST((DateDiff / $COLUMN_TRIGGERED_PERIOD) + 1 AS INTEGER) * $COLUMN_TRIGGERED_PERIOD
+                  END AS NextTriggerStep
+                FROM (
+                    SELECT
+                    *,
+                    julianday(DATETIME('now', 'localtime')) - julianday($COLUMN_TRIGGERED_AT, 'localtime') AS DateDiff
+                    FROM events
+                ) WHERE NOT ($COLUMN_IS_PERIODIC = 0 AND DATETIME($COLUMN_TRIGGERED_AT, 'localtime') > DATETIME('now', 'localtime'))
+            )
+            ORDER BY RealTrigger ASC
+        """.trimIndent()
+
+        val cursor = db.rawQuery(query, null)
         val events = mutableListOf<Event>()
 
         if (cursor.moveToFirst()) {
@@ -219,15 +268,43 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         val db = this.readableDatabase
         // Форматируем дату в строку формата "yyyy-MM-dd" для сравнения только дня
         val dateString = date.toString()
-
-        var query = "SELECT * FROM $TABLE_NAME WHERE DATE($COLUMN_TRIGGERED_AT) = ? ORDER BY $COLUMN_TRIGGERED_AT ASC"
+        // TODO: FIX DATA FORMAT TO INCLUDE CURRENT TIME
+        var query = """
+            SELECT
+                $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS CreatedAt,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS EditedAt,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(
+                    julianday($COLUMN_TRIGGERED_AT + NextTriggerStep, 'localtime')
+                ) AS TriggeredAt,
+                $COLUMN_IS_PERIODIC,
+                $COLUMN_TRIGGERED_PERIOD,
+                CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER) AS NextEventInDays,
+                datetime($COLUMN_TRIGGERED_AT, 'localtime') as RealTrigger
+            FROM (
+                SELECT *,
+                CASE
+                    WHEN ABS(DateDiff) <= 1 THEN
+                      CAST(ABS(DateDiff) AS INTEGER)
+                    ELSE
+                      CAST((DateDiff / $COLUMN_TRIGGERED_PERIOD) + 1 AS INTEGER) * $COLUMN_TRIGGERED_PERIOD
+                  END AS NextTriggerStep
+                FROM (
+                    SELECT
+                    *,
+                    julianday(DATETIME(?)) - julianday($COLUMN_TRIGGERED_AT, 'localtime') AS DateDiff
+                    FROM events
+                ) WHERE NOT ($COLUMN_IS_PERIODIC = 0 AND DATETIME($COLUMN_TRIGGERED_AT, 'localtime') > DATETIME(?))
+            )
+            ORDER BY RealTrigger ASC
+        """.trimIndent()
 
         // Добавляем LIMIT только если count >= 0
         val selectionArgs: Array<String> = if (count >= 0) {
             query += " LIMIT ?"
-            arrayOf(dateString, count.toString())
+            arrayOf(dateString, dateString, count.toString())
         } else {
-            arrayOf(dateString)
+            arrayOf(dateString, dateString)
         }
         val cursor = db.rawQuery(query, selectionArgs)
         val events = mutableListOf<Event>()
