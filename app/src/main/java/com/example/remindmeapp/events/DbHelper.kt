@@ -177,16 +177,37 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
 
     fun updateAllEvent() {
         val db = this.writableDatabase
+        var query = """
+            SELECT
+                $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0), 'localtime')) AS $COLUMN_TRIGGERED_AT,
+                $COLUMN_IS_PERIODIC,
+                $COLUMN_TRIGGERED_PERIOD,
+                COALESCE(CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER), 0) AS NextEventInDays,
+                datetime($COLUMN_TRIGGERED_AT, 'localtime') as RealTrigger
+            FROM (
+                SELECT *,
+                CASE
+                    WHEN ABS(DateDiff) <= 1 THEN
+                      CAST(ABS(DateDiff) AS INTEGER)
+                    ELSE
+                      CAST((DateDiff / $COLUMN_TRIGGERED_PERIOD) + 1 AS INTEGER) * $COLUMN_TRIGGERED_PERIOD
+                  END AS NextTriggerStep
+                FROM (
+                    SELECT
+                    *,
+                    julianday(DATETIME('now', 'localtime')) - julianday($COLUMN_TRIGGERED_AT, 'localtime') AS DateDiff
+                    FROM events
+                ) WHERE NOT ($COLUMN_IS_PERIODIC = 0 AND DATETIME($COLUMN_TRIGGERED_AT, 'localtime') < DATETIME('now', 'localtime'))
+            )
+            ORDER BY $COLUMN_TRIGGERED_AT ASC
+        """.trimIndent()
         val cursor = db.rawQuery(
-            "SELECT " +
-                    "$COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR," +
-                    "$COLUMN_COLOR, " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT, " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT, " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_TRIGGERED_AT, 'localtime')) AS $COLUMN_TRIGGERED_AT, " +
-                    "$COLUMN_IS_PERIODIC, $COLUMN_TRIGGERED_PERIOD" +
-                    " FROM $TABLE_NAME ORDER BY $COLUMN_TRIGGERED_AT ASC",
-            null)
+            query,
+            null
+        )
 
         if (cursor.moveToFirst()) {
             do {
