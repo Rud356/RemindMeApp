@@ -306,9 +306,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     fun getEventsByDayAll(date: LocalDate, count : Int) : List<Event> {
         val db = this.readableDatabase
         // Форматируем дату в строку формата "yyyy-MM-dd" для сравнения только дня
-        date.atTime(LocalTime.now())
         val dateString = date.toString()
-        // TODO: FIX DATA FORMAT TO INCLUDE CURRENT TIME
         var query = """
             SELECT
                 $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
