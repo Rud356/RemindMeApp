@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.remindmeapp.remind.ReminderApplication
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
 
 class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?) : SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
 
@@ -47,9 +49,17 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         values.put(COLUMN_NAME, event.name)
         values.put(COLUMN_DESCR, event.descr)
         values.put(COLUMN_COLOR, event.color)
-        values.put(COLUMN_CREATED_AT, event.createdAt.toString())
-        values.put(COLUMN_EDITED_AT, event.editedAt.toString())
-        values.put(COLUMN_TRIGGERED_AT, event.triggeredAt.toString())
+        values.put(
+            COLUMN_CREATED_AT,
+            LocalDateTime.parse(event.createdAt).atOffset(ZoneOffset.UTC).toString()
+        )
+        values.put(COLUMN_EDITED_AT,
+            LocalDateTime.parse(event.editedAt).atOffset(ZoneOffset.UTC).toString()
+        )
+        values.put(
+            COLUMN_TRIGGERED_AT,
+            LocalDateTime.parse(event.triggeredAt).atOffset(ZoneOffset.UTC).toString()
+        )
         values.put(COLUMN_IS_PERIODIC, event.isPeriodic)
         values.put(COLUMN_TRIGGERED_PERIOD, event.triggeredPeriod)
 
@@ -78,14 +88,33 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     fun getEventById(id: Int): Event? {
         val db = this.readableDatabase
         val cursor = db.rawQuery(
-            "SELECT " +
-                    "$COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR," +
-                    "$COLUMN_COLOR, " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')), " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')), " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_TRIGGERED_AT, 'localtime')), " +
-                    "$COLUMN_IS_PERIODIC, $COLUMN_TRIGGERED_PERIOD" +
-                " FROM $TABLE_NAME WHERE $COLUMN_ID = ?",
+            """
+                SELECT
+                $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0), 'localtime')) AS $COLUMN_TRIGGERED_AT,
+                $COLUMN_IS_PERIODIC,
+                $COLUMN_TRIGGERED_PERIOD,
+                COALESCE(CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER), 0) AS NextEventInDays,
+                datetime($COLUMN_TRIGGERED_AT, 'localtime') as RealTrigger
+            FROM (
+                SELECT *,
+                CASE
+                    WHEN ABS(DateDiff) <= 1 THEN
+                      CAST(ABS(DateDiff) AS INTEGER)
+                    ELSE
+                      CAST((DateDiff / $COLUMN_TRIGGERED_PERIOD) + 1 AS INTEGER) * $COLUMN_TRIGGERED_PERIOD
+                  END AS NextTriggerStep
+                FROM (
+                    SELECT
+                    *,
+                    julianday(DATETIME('now', 'localtime')) - julianday($COLUMN_TRIGGERED_AT, 'localtime') AS DateDiff
+                    FROM events
+                ) WHERE NOT ($COLUMN_IS_PERIODIC = 0 AND DATETIME($COLUMN_TRIGGERED_AT, 'localtime') < DATETIME('now', 'localtime'))
+            )
+            WHERE $COLUMN_ID = ?
+            """.trimIndent(),
             arrayOf(id.toString())
         )
 
@@ -122,9 +151,17 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
             put(COLUMN_NAME, event.name)
             put(COLUMN_DESCR, event.descr)
             put(COLUMN_COLOR, event.color)
-            put(COLUMN_CREATED_AT, event.createdAt.toString())
-            put(COLUMN_EDITED_AT, event.editedAt.toString())
-            put(COLUMN_TRIGGERED_AT, event.triggeredAt.toString())
+            put(
+                COLUMN_CREATED_AT,
+                LocalDateTime.parse(event.createdAt).atOffset(ZoneOffset.UTC).toString()
+            )
+            put(COLUMN_EDITED_AT,
+                LocalDateTime.parse(event.editedAt).atOffset(ZoneOffset.UTC).toString()
+            )
+            put(
+                COLUMN_TRIGGERED_AT,
+                LocalDateTime.parse(event.triggeredAt).atOffset(ZoneOffset.UTC).toString()
+            )
             put(COLUMN_IS_PERIODIC, event.isPeriodic)
             put(COLUMN_TRIGGERED_PERIOD, event.triggeredPeriod)
         }
@@ -144,9 +181,9 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
             "SELECT " +
                     "$COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR," +
                     "$COLUMN_COLOR, " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')), " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')), " +
-                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_TRIGGERED_AT, 'localtime')), " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT, " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT, " +
+                    "strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_TRIGGERED_AT, 'localtime')) AS $COLUMN_TRIGGERED_AT, " +
                     "$COLUMN_IS_PERIODIC, $COLUMN_TRIGGERED_PERIOD" +
                     " FROM $TABLE_NAME ORDER BY $COLUMN_TRIGGERED_AT ASC",
             null)
@@ -210,14 +247,12 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         var query = """
             SELECT
                 $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS CreatedAt,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS EditedAt,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(
-                    julianday($COLUMN_TRIGGERED_AT + NextTriggerStep, 'localtime')
-                ) AS TriggeredAt,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0), 'localtime')) AS $COLUMN_TRIGGERED_AT,
                 $COLUMN_IS_PERIODIC,
                 $COLUMN_TRIGGERED_PERIOD,
-                CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER) AS NextEventInDays,
+                COALESCE(CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER), 0) AS NextEventInDays,
                 datetime($COLUMN_TRIGGERED_AT, 'localtime') as RealTrigger
             FROM (
                 SELECT *,
@@ -232,7 +267,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                     *,
                     julianday(DATETIME('now', 'localtime')) - julianday($COLUMN_TRIGGERED_AT, 'localtime') AS DateDiff
                     FROM events
-                ) WHERE NOT ($COLUMN_IS_PERIODIC = 0 AND DATETIME($COLUMN_TRIGGERED_AT, 'localtime') > DATETIME('now', 'localtime'))
+                ) WHERE NOT ($COLUMN_IS_PERIODIC = 0 AND DATETIME($COLUMN_TRIGGERED_AT, 'localtime') < DATETIME('now', 'localtime'))
             )
             ORDER BY RealTrigger ASC
         """.trimIndent()
@@ -253,11 +288,15 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                     isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_PERIODIC)) > 0,
                     triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_PERIOD)),
                 )
-
-                var updatedEvent = updateEventTrigger(event)
-                if (updatedEvent != null)
-                    events.add(updatedEvent)
-
+                var tr = cursor.getString(10);
+                try {
+                    var updatedEvent = updateEventTrigger(event)
+                    if (updatedEvent != null)
+                        events.add(updatedEvent)
+                }
+                catch (e: Exception) {
+                    e.printStackTrace()
+                }
             } while (cursor.moveToNext())
         }
         cursor.close()
@@ -267,19 +306,18 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     fun getEventsByDayAll(date: LocalDate, count : Int) : List<Event> {
         val db = this.readableDatabase
         // Форматируем дату в строку формата "yyyy-MM-dd" для сравнения только дня
+        date.atTime(LocalTime.now())
         val dateString = date.toString()
         // TODO: FIX DATA FORMAT TO INCLUDE CURRENT TIME
         var query = """
             SELECT
                 $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS CreatedAt,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS EditedAt,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(
-                    julianday($COLUMN_TRIGGERED_AT + NextTriggerStep, 'localtime')
-                ) AS TriggeredAt,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0), 'localtime')) AS $COLUMN_TRIGGERED_AT,
                 $COLUMN_IS_PERIODIC,
                 $COLUMN_TRIGGERED_PERIOD,
-                CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER) AS NextEventInDays,
+                COALESCE(CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER), 0) AS NextEventInDays,
                 datetime($COLUMN_TRIGGERED_AT, 'localtime') as RealTrigger
             FROM (
                 SELECT *,
@@ -294,7 +332,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                     *,
                     julianday(DATETIME(?)) - julianday($COLUMN_TRIGGERED_AT, 'localtime') AS DateDiff
                     FROM events
-                ) WHERE NOT ($COLUMN_IS_PERIODIC = 0 AND DATETIME($COLUMN_TRIGGERED_AT, 'localtime') > DATETIME(?))
+                ) WHERE NOT ($COLUMN_IS_PERIODIC = 0 AND DATETIME($COLUMN_TRIGGERED_AT, 'localtime') < DATETIME(?))
             )
             ORDER BY RealTrigger ASC
         """.trimIndent()
@@ -322,7 +360,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                     isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_PERIODIC)) > 0,
                     triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_PERIOD)),
                 )
-
+                var tr = cursor.getString(10);
                 var updatedEvent = updateEventTrigger(event)
                 if (updatedEvent != null)
                     events.add(updatedEvent)
