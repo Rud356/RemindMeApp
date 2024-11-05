@@ -3,7 +3,6 @@ package com.example.remindmeapp.fragments
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import android.widget.ImageView
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.example.remindmeapp.ColorPickerView
 import com.example.remindmeapp.R
 import com.example.remindmeapp.RepeatSelectorView
@@ -26,7 +24,9 @@ import com.example.remindmeapp.events.Event
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import kotlin.text.isEmpty
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.util.TimeZone
 
 class EditEventFragment : Fragment() {
 
@@ -110,11 +110,15 @@ class EditEventFragment : Fragment() {
             }
 
             try {
+                // OffsetDateTime.parse(event.triggeredAt).toLocalDateTime()
                 event.name = eventNameTxt.text.toString()
                 event.descr = eventTextTxt.text.toString()
                 event.color = colorPicker.getColor()
-                event.triggeredAt = LocalDateTime.of(date, time).toString()
-                event.editedAt = LocalDateTime.now().toString()
+                var localTimezone = TimeZone.getDefault().toZoneId();
+                event.triggeredAt = LocalDateTime.of(date, time).atZone(localTimezone).withZoneSameInstant(
+                    ZoneId.of("UTC")
+                ).toInstant().toString()
+                event.editedAt = LocalDateTime.now(ZoneOffset.UTC).toString()
                 event.triggeredPeriod = repeatSelector.getSelectedOption()
                 event.isPeriodic = event.triggeredPeriod > 0
 

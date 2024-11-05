@@ -4,7 +4,7 @@ import android.app.AlarmManager
 import android.content.Context
 import android.os.Build
 import com.example.remindmeapp.events.Event
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.ZoneId
 
 class AlarmHelper {
@@ -18,7 +18,7 @@ class AlarmHelper {
     }
 
     fun addEvent(event: Event){
-        val triggerAtTime = LocalDateTime.parse(event.triggeredAt)
+        val triggerAtTime = OffsetDateTime.parse(event.triggeredAt).toLocalDateTime()
         val triggerInMillis = triggerAtTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
         // Вычисляем время напоминания за час до события

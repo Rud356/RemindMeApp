@@ -23,6 +23,9 @@ import com.example.remindmeapp.events.Event
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.util.TimeZone
 import kotlin.text.isEmpty
 
 class AddEventFragment : Fragment() {
@@ -85,14 +88,17 @@ class AddEventFragment : Fragment() {
                 val name = eventNameTxt.text.toString()
                 val text = eventTextTxt.text.toString()
                 val color = colorPicker.getColor()
-                val dateTime : LocalDateTime = LocalDateTime.of(date, time)
-                val currentTime = LocalDateTime.now().toString()
+                var localTimezone = TimeZone.getDefault().toZoneId();
+                var dateTime = LocalDateTime.of(date, time).atZone(localTimezone).withZoneSameInstant(
+                    ZoneId.of("UTC")
+                ).toInstant().toString()
+                val currentTime = LocalDateTime.now(ZoneOffset.UTC).toString()
                 val triggeredPeriod = repeatSelector.getSelectedOption()
                 val isPeriodic = triggeredPeriod > 0
 
                 val dbHelper = DbHelper(requireContext(), null)
                 dbHelper.addEvent(
-                    Event(0, name, text, color, currentTime, currentTime, dateTime.toString(), isPeriodic, triggeredPeriod)
+                    Event(0, name, text, color, currentTime, currentTime, dateTime, isPeriodic, triggeredPeriod)
                 )
 
                 FragmentSwitcher.backPress(requireActivity())

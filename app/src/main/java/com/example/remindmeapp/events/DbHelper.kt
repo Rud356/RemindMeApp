@@ -51,14 +51,14 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         values.put(COLUMN_COLOR, event.color)
         values.put(
             COLUMN_CREATED_AT,
-            LocalDateTime.parse(event.createdAt).atOffset(ZoneOffset.UTC).toString()
+            event.createdAt
         )
         values.put(COLUMN_EDITED_AT,
-            LocalDateTime.parse(event.editedAt).atOffset(ZoneOffset.UTC).toString()
+            event.editedAt
         )
         values.put(
             COLUMN_TRIGGERED_AT,
-            LocalDateTime.parse(event.triggeredAt).atOffset(ZoneOffset.UTC).toString()
+            event.triggeredAt
         )
         values.put(COLUMN_IS_PERIODIC, event.isPeriodic)
         values.put(COLUMN_TRIGGERED_PERIOD, event.triggeredPeriod)
@@ -153,14 +153,14 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
             put(COLUMN_COLOR, event.color)
             put(
                 COLUMN_CREATED_AT,
-                LocalDateTime.parse(event.createdAt).atOffset(ZoneOffset.UTC).toString()
+                event.createdAt
             )
             put(COLUMN_EDITED_AT,
-                LocalDateTime.parse(event.editedAt).atOffset(ZoneOffset.UTC).toString()
+                event.editedAt
             )
             put(
                 COLUMN_TRIGGERED_AT,
-                LocalDateTime.parse(event.triggeredAt).atOffset(ZoneOffset.UTC).toString()
+                event.triggeredAt
             )
             put(COLUMN_IS_PERIODIC, event.isPeriodic)
             put(COLUMN_TRIGGERED_PERIOD, event.triggeredPeriod)
@@ -229,8 +229,9 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                 }
 
                 println("Old triggered time = ${triggeredAt}, new triggered time = $newTriggeredAt updated.")
-                event.triggeredAt = newTriggeredAt.toString()
-                event.editedAt = LocalDateTime.now().toString()
+                // THIS CODE IS UNNECESSARY SINCE TIME IS RECALCULATED AUTOMATICALLY NOW
+                //                event.triggeredAt = newTriggeredAt.toString()
+                //                event.editedAt = LocalDateTime.now().toString()
                 updateEvent(event)
             } else {
                 println("Event with ${event.id} deleted.")

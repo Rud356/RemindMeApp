@@ -17,6 +17,6 @@ object DateFormatHelper {
     }
 
     fun toLong(date: LocalDate) : Long {
-        return date.atStartOfDay(ZoneOffset.systemDefault()).toInstant().toEpochMilli()
+        return date.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
     }
 }
