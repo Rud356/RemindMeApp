@@ -8,7 +8,10 @@ import com.example.remindmeapp.remind.ReminderApplication
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
+import java.util.TimeZone
 
 class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?) : SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
 
@@ -232,8 +235,8 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     }
 
     private fun updateEventTrigger(event: Event) : Event? {
-        val triggeredAt = LocalDateTime.parse(event.triggeredAt)
-        val currentDateTime = LocalDateTime.now()
+        val triggeredAt = LocalDateTime.parse(event.triggeredAt).atZone(ZoneOffset.UTC).toOffsetDateTime()
+        val currentDateTime = OffsetDateTime.now(ZoneOffset.UTC)
 
         if (triggeredAt.isBefore(currentDateTime)) {
             if (event.isPeriodic) {
