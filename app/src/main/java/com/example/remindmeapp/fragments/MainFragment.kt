@@ -55,7 +55,7 @@ class MainFragment : Fragment() {
         val bundle = Bundle()
         bundle.putString("date", date.format(DateFormatHelper.dateFormatter))
 
-        val dayEventsFragment = FragmentSwitcher.DayEventsFragment
+        val dayEventsFragment = DayEventsFragment()
         dayEventsFragment.arguments = bundle
         return dayEventsFragment
     }

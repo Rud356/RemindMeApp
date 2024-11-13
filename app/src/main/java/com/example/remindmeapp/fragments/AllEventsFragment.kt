@@ -1,6 +1,5 @@
 package com.example.remindmeapp.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +17,7 @@ class AllEventsFragment : Fragment() {
 
     private lateinit var dbHelper: DbHelper
     private lateinit var listView: ListView
+    private lateinit var unsubscribe : () -> Unit
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,16 +37,21 @@ class AllEventsFragment : Fragment() {
         }
 
         addEventBtn.setOnClickListener {
-            FragmentSwitcher.replaceFragment(FragmentSwitcher.AddEventFragment)
+            FragmentSwitcher.replaceFragment(AddEventFragment())
         }
 
-        FragmentSwitcher.onEventTriggered {
+        unsubscribe = FragmentSwitcher.onEventTriggered {
             if (context != null) {
                 updateEvents()
             }
         }
 
         return view
+    }
+
+    override fun onDestroyView() {
+        unsubscribe()
+        super.onDestroyView()
     }
 
     private fun updateEvents(){

@@ -3,7 +3,6 @@ package com.example.remindmeapp.fragments
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +13,11 @@ import android.widget.ImageView
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.example.remindmeapp.ColorPickerView
 import com.example.remindmeapp.R
 import com.example.remindmeapp.RepeatSelectorView
 import com.example.remindmeapp.custom.DateFormatHelper
+import com.example.remindmeapp.custom.DateTimeFormatHelper
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.custom.TimeFormatHelper
 import com.example.remindmeapp.events.DbHelper
@@ -38,6 +37,8 @@ class EditEventFragment : Fragment() {
 
     private lateinit var dateInput : EditText
     private lateinit var timeInput : EditText
+
+    private lateinit var unsubscribe : () -> Unit
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,10 +73,12 @@ class EditEventFragment : Fragment() {
         // TODO: Написать сеттер для повтора
         colorPicker.setColor(event.color)
         repeatSelector.setOption(event.triggeredPeriod)
-        eventNameTxt.setText(event.name);
-        eventTextTxt.setText(event.descr);
-        date = LocalDateTime.parse(event.triggeredAt).toLocalDate()
-        time = LocalDateTime.parse(event.triggeredAt).toLocalTime()
+        eventNameTxt.setText(event.name)
+        eventTextTxt.setText(event.descr)
+
+        val dateTime = DateTimeFormatHelper.parseZone(event.triggeredAt)
+        date = dateTime.toLocalDate()
+        time = dateTime.toLocalTime()
 
         updateDateText()
         updateTimeText()
@@ -96,14 +99,13 @@ class EditEventFragment : Fragment() {
             showDeleteConfirmationDialog(event.id)
         }
 
-        FragmentSwitcher.onEventTriggered {
+        unsubscribe = FragmentSwitcher.onEventTriggered {
             if (context != null) {
                 updateEventInfo()
             }
         }
 
         editEventBtn.setOnClickListener {
-            // TODO: Логика добавления ивента в БД и на сервер
             if (eventNameTxt.text.isEmpty() || dateInput.text.isEmpty() || timeInput.text.isEmpty()) {
                 Toast.makeText(requireContext(), "Необходимо заполнить все обязательные поля", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -113,11 +115,12 @@ class EditEventFragment : Fragment() {
                 event.name = eventNameTxt.text.toString()
                 event.descr = eventTextTxt.text.toString()
                 event.color = colorPicker.getColor()
-                event.triggeredAt = LocalDateTime.of(date, time).toString()
-                event.editedAt = LocalDateTime.now().toString()
+                event.triggeredAt = DateTimeFormatHelper.toZoneString(LocalDateTime.of(date, time))
+                event.editedAt = DateTimeFormatHelper.toZoneString(LocalDateTime.now())
                 event.triggeredPeriod = repeatSelector.getSelectedOption()
                 event.isPeriodic = event.triggeredPeriod > 0
 
+                // TODO: Логика обновления ивента в БД и на сервере
                 dbHelper.updateEvent(event)
 
                 FragmentSwitcher.backPress(requireActivity())
@@ -129,6 +132,11 @@ class EditEventFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onDestroyView() {
+        unsubscribe()
+        super.onDestroyView()
     }
 
     private fun showDeleteConfirmationDialog(eventId: Int) {

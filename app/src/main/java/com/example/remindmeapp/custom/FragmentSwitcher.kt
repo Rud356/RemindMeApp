@@ -4,10 +4,6 @@ import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.example.remindmeapp.fragments.AddEventFragment
-import com.example.remindmeapp.fragments.AllEventsFragment
-import com.example.remindmeapp.fragments.DayEventsFragment
-import com.example.remindmeapp.fragments.EditEventFragment
 import com.example.remindmeapp.fragments.MainFragment
 import java.lang.IllegalStateException
 
@@ -16,14 +12,14 @@ object FragmentSwitcher {
     private var containerId: Int = 0
 
     val MainFragment : MainFragment = MainFragment()
-    val AddEventFragment : AddEventFragment = AddEventFragment()
-    val AllEventsFragment : AllEventsFragment = AllEventsFragment()
-    val DayEventsFragment : DayEventsFragment = DayEventsFragment()
-    val EditEventFragment : EditEventFragment = EditEventFragment()
 
     private val subscribers = mutableListOf<() -> Unit>()
 
-    fun onEventTriggered(action: () -> Unit) = subscribers.add(action)
+    fun onEventTriggered(action: () -> Unit): () -> Unit {
+        subscribers.add(action)
+        // Возвращаем функцию, которая удаляет action из subscribers для отписки
+        return { subscribers.remove(action) }
+    }
 
     fun initialize(fragmentManager: FragmentManager, containerId: Int) {
         this.fragmentManager = fragmentManager

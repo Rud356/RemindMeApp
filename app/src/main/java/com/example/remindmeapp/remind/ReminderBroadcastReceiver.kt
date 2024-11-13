@@ -37,8 +37,12 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
             notificationManager.notify(id!!, builder.build())
 
             val dbHelper = DbHelper(context, null)
-            dbHelper.updateAllEvent()
-            println("Событие сработало")
+            val event = dbHelper.getEventById(id)
+
+            if (event != null)
+                dbHelper.updateEventTrigger(event)
+
+            println("Событие сработало и обновлено")
             FragmentSwitcher.updateEvents()
         }
     }

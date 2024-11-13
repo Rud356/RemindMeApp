@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                     FragmentSwitcher.replaceFragment(FragmentSwitcher.MainFragment)
                 }
                 R.id.nav_events -> {
-                    FragmentSwitcher.replaceFragment(FragmentSwitcher.AllEventsFragment)
+                    FragmentSwitcher.replaceFragment(AllEventsFragment())
                 }
                 R.id.nav_exit -> {
                     RegistrationService.logOut(this)
