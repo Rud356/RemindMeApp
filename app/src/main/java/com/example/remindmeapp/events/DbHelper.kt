@@ -183,9 +183,9 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         var query = """
             SELECT
                 $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0), 'localtime')) AS $COLUMN_TRIGGERED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT)) AS $COLUMN_CREATED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT)) AS $COLUMN_EDITED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0))) AS $COLUMN_TRIGGERED_AT,
                 $COLUMN_IS_PERIODIC,
                 $COLUMN_TRIGGERED_PERIOD,
                 COALESCE(CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER), 0) AS NextEventInDays,
@@ -235,7 +235,8 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     }
 
     private fun updateEventTrigger(event: Event) : Event? {
-        val triggeredAt = LocalDateTime.parse(event.triggeredAt).atZone(ZoneOffset.UTC).toOffsetDateTime()
+        var triggeredAt = LocalDateTime.parse(event.triggeredAt).atZone(ZoneOffset.UTC).toOffsetDateTime()
+        event.triggeredAt = triggeredAt.toString();
         val currentDateTime = OffsetDateTime.now(ZoneOffset.UTC)
 
         if (triggeredAt.isBefore(currentDateTime)) {
@@ -274,7 +275,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                 $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
                 strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT,
                 strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0), 'localtime')) AS $COLUMN_TRIGGERED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0))) AS $COLUMN_TRIGGERED_AT,
                 $COLUMN_IS_PERIODIC,
                 $COLUMN_TRIGGERED_PERIOD,
                 COALESCE(CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER), 0) AS NextEventInDays,
@@ -337,7 +338,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                 $COLUMN_ID, $COLUMN_NAME, $COLUMN_DESCR, $COLUMN_COLOR,
                 strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_CREATED_AT, 'localtime')) AS $COLUMN_CREATED_AT,
                 strftime('%Y-%m-%dT%H:%M:%S', DATETIME($COLUMN_EDITED_AT, 'localtime')) AS $COLUMN_EDITED_AT,
-                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0), 'localtime')) AS $COLUMN_TRIGGERED_AT,
+                strftime('%Y-%m-%dT%H:%M:%S', DATETIME(julianday($COLUMN_TRIGGERED_AT) + COALESCE(NextTriggerStep, 0))) AS $COLUMN_TRIGGERED_AT,
                 $COLUMN_IS_PERIODIC,
                 $COLUMN_TRIGGERED_PERIOD,
                 COALESCE(CAST(round(NextTriggerStep - DateDiff, 0) AS INTEGER), 0) AS NextEventInDays,

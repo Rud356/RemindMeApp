@@ -18,6 +18,8 @@ import com.example.remindmeapp.custom.TimeFormatHelper
 import com.example.remindmeapp.events.Event
 import com.example.remindmeapp.fragments.EditEventFragment
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
 
 class EventShortAdapter(private val context: Context, private val events: List<Event>) : ArrayAdapter<Event>(context, 0, events) {
 
@@ -43,7 +45,7 @@ class EventShortAdapter(private val context: Context, private val events: List<E
             FragmentSwitcher.replaceFragment(editEventFragment)
         }
 
-        val triggeredAt = LocalDateTime.parse(event.triggeredAt)
+        val triggeredAt = OffsetDateTime.parse(event.triggeredAt).atZoneSameInstant(ZoneId.systemDefault())
 
         itemText.text = event.name
         itemTime.text = triggeredAt.format(TimeFormatHelper.timeFormatter)

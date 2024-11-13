@@ -18,8 +18,8 @@ class AlarmHelper {
     }
 
     fun addEvent(event: Event){
-        val triggerAtTime = OffsetDateTime.parse(event.triggeredAt).toLocalDateTime()
-        val triggerInMillis = triggerAtTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val triggerAtTime = OffsetDateTime.parse(event.triggeredAt)
+        val triggerInMillis = triggerAtTime.atZoneSameInstant(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
         // Вычисляем время напоминания за час до события
         val reminderHourInMillis = triggerInMillis - 60 * 60 * 1000  // 1 час в миллисекундах
