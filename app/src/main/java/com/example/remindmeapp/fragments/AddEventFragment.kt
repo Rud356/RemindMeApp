@@ -87,8 +87,6 @@ class AddEventFragment : Fragment() {
                 val color = colorPicker.getColor()
                 val dateTime : LocalDateTime = LocalDateTime.of(date, time)
                 val currentTime = DateTimeFormatHelper.toZoneString(LocalDateTime.now())
-                println(currentTime)
-                println(DateTimeFormatHelper.toZoneString(dateTime))
                 val triggeredPeriod = repeatSelector.getSelectedOption()
                 val isPeriodic = triggeredPeriod > 0
 

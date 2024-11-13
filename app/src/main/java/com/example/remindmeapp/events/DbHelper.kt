@@ -155,7 +155,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         db.close()
     }
 
-    private fun updateEventTrigger(event: Event) : Event? {
+    fun updateEventTrigger(event: Event) : Event? {
         val triggeredAt = DateTimeFormatHelper.parseZone(event.triggeredAt)
         val currentDateTime = LocalDateTime.now()
 
@@ -205,31 +205,39 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                     isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_PERIODIC)) > 0,
                     triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_PERIOD)),
                 )
-
-                var updatedEvent = updateEventTrigger(event)
-                if (updatedEvent != null)
-                    events.add(updatedEvent)
-
+                events.add(event)
             } while (cursor.moveToNext())
         }
         cursor.close()
         return events
     }
 
-    fun getEventsByDayAll(date: LocalDate, count : Int) : List<Event> {
+    fun getEventsByDayAll(date: LocalDate, count: Int): List<Event> {
         val db = this.readableDatabase
-        // Форматируем дату в строку формата "yyyy-MM-dd" для сравнения только дня
         val dateString = date.toString()
 
-        var query = "SELECT * FROM $TABLE_NAME WHERE DATE($COLUMN_TRIGGERED_AT) = ? ORDER BY $COLUMN_TRIGGERED_AT ASC"
+        var query = """
+                    SELECT *, DATE($COLUMN_TRIGGERED_AT, 'utc', 'localtime') as TriggerTime FROM $TABLE_NAME
+                    WHERE (
+                        -- Обычные (непериодические) события на указанный день
+                        (DATE($COLUMN_TRIGGERED_AT, 'utc', 'localtime') = ?)
+                        OR 
+                        -- Периодические события, которые должны сработать в указанный день
+                        ($COLUMN_IS_PERIODIC = 1 AND
+                         DATE(TriggerTime, '+' || (CAST((julianday(?) - julianday(TriggerTime)) / $COLUMN_TRIGGERED_PERIOD as INTEGER) * $COLUMN_TRIGGERED_PERIOD) || ' days') = ?
+                        )
+                    )
+                    ORDER BY $COLUMN_TRIGGERED_AT ASC
+                """.trimIndent()
 
         // Добавляем LIMIT только если count >= 0
         val selectionArgs: Array<String> = if (count >= 0) {
             query += " LIMIT ?"
-            arrayOf(dateString, count.toString())
+            arrayOf(dateString, dateString, dateString, count.toString())
         } else {
-            arrayOf(dateString)
+            arrayOf(dateString, dateString, dateString)
         }
+
         val cursor = db.rawQuery(query, selectionArgs)
         val events = mutableListOf<Event>()
 
@@ -246,13 +254,11 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                     isPeriodic = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_PERIODIC)) > 0,
                     triggeredPeriod = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TRIGGERED_PERIOD)),
                 )
-
-                var updatedEvent = updateEventTrigger(event)
-                if (updatedEvent != null)
-                    events.add(updatedEvent)
+                events.add(event)
             } while (cursor.moveToNext())
         }
         cursor.close()
         return events
     }
+
 }
