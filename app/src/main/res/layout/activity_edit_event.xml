@@ -186,7 +186,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="2dp"
         android:paddingVertical="10dp"
-        android:backgroundTint="@color/red"
+        android:backgroundTint="#CF0000"
         android:fontFamily="@font/nunito_bold"
         android:text="Удалить"
         android:textAllCaps="false"
