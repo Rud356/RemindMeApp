@@ -8,7 +8,13 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.example.remindmeapp.R
+import com.example.remindmeapp.api.ApiClient
 import com.example.remindmeapp.registration.RegistrationService
+import com.example.remindmeapp.registration.User
+import com.example.remindmeapp.remind.ReminderApplication
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.jvm.java
 import kotlin.text.trim
 
@@ -37,15 +43,19 @@ class LoginActivity : Activity() {
                 return@setOnClickListener;
             }
 
-            // TODO: Сделать проверку удалось ли войти отправив запрос на сервак
+            CoroutineScope(Dispatchers.Main).launch {
+                val res = RegistrationService.loginUser(this@LoginActivity, User(login, pass, ip))
 
-            if (logined) {
-                val intent = Intent(this, MainActivity::class.java)
-                RegistrationService.loginUser(this, login, pass)
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Не удалось авторизоваться, попробуйте снова", Toast.LENGTH_LONG).show()
+                if (!res.isSuccessful)
+                    logined = false
+
+                if (logined) {
+                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this@LoginActivity, "Не удалось авторизоваться, попробуйте снова", Toast.LENGTH_LONG).show()
+                }
             }
         }
 

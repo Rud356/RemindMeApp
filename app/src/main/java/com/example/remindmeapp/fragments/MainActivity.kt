@@ -17,6 +17,9 @@ import com.example.remindmeapp.R
 import com.example.remindmeapp.custom.FragmentSwitcher
 import com.example.remindmeapp.registration.RegistrationService
 import com.example.remindmeapp.remind.ReminderApplication
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.jvm.java
 
 class MainActivity : AppCompatActivity() {
@@ -76,10 +79,12 @@ class MainActivity : AppCompatActivity() {
                     FragmentSwitcher.replaceFragment(AllEventsFragment())
                 }
                 R.id.nav_exit -> {
-                    RegistrationService.logOut(this)
-                    intent = Intent(this, LoadingActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        RegistrationService.logOut(this@MainActivity)
+                        intent = Intent(this@MainActivity, LoadingActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
                 }
                 R.id.nav_close -> {
                     finish()

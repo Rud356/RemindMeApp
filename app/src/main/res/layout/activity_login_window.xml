@@ -78,14 +78,14 @@
                 android:background="@drawable/edittext_background"
                 android:ems="10"
                 android:fontFamily="@font/nunito_mediumitalic"
-                android:textColor="@color/static_black"
-                android:textColorHint="@color/gray"
-                android:textSize="18sp"
                 android:hint="@string/form_input_ip"
-                android:text="192.168.0.1"
                 android:inputType="text"
                 android:paddingVertical="13dp"
                 android:paddingStart="20dp"
+                android:text="10.0.2.2"
+                android:textColor="@color/static_black"
+                android:textColorHint="@color/gray"
+                android:textSize="18sp"
                 tools:ignore="RtlSymmetry" />
 
             <EditText

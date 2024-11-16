@@ -85,10 +85,10 @@ class ColorPickerView @JvmOverloads constructor(
         if (background is GradientDrawable) {
             val colorStateList = background.color
             val colorInt = colorStateList?.defaultColor ?: 0
-            val color = String.format("#%06X", 0xFFFFFF and colorInt)
+            val color = String.format("%06X", 0xFFFFFF and colorInt)
             return color
         }
-        return "#000000" // Если не нашли подходящий Drawable, возвращаем черный цвет
+        return "000000" // Если не нашли подходящий Drawable, возвращаем черный цвет
     }
 
 }

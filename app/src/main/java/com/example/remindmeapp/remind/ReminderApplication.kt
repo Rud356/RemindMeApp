@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.media.AudioAttributes
 import android.os.Build
 import android.provider.Settings
+import com.example.remindmeapp.api.ApiClient
 import com.example.remindmeapp.events.DbHelper
 
 class ReminderApplication : Application() {
@@ -16,14 +17,13 @@ class ReminderApplication : Application() {
         const val channelId = "reminders"
 
         lateinit var alarmHelper : AlarmHelper
+        lateinit var apiClient: ApiClient
     }
 
     override fun onCreate() {
         super.onCreate()
 
         alarmHelper = AlarmHelper(getSystemService(ALARM_SERVICE) as AlarmManager, this)
-        val dbHelper = DbHelper(this, null)
-        dbHelper.updateAllEvent()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)

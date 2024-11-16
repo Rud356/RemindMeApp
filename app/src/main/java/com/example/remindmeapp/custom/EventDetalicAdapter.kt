@@ -76,7 +76,7 @@ class EventDetalicAdapter(private val context: Context, private val events: List
         val linearLayout: LinearLayout = view.findViewById(R.id.background)
         val background = linearLayout.background as LayerDrawable
         val colorLayer = background.getDrawable(0) // 0 — это индекс первого слоя
-        val newColor = Color.parseColor(event.color)
+        val newColor = Color.parseColor("#${event.color}")
 
         if (colorLayer is GradientDrawable) {
             colorLayer.setColor(newColor)

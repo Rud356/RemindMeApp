@@ -68,7 +68,7 @@ class MainFragment : Fragment() {
         else
             textSelectedDate.text = DateFormatHelper.toString(date)
 
-        val events = dbHelper.getEventsByDayAll(date, 4)
+        val events = dbHelper.getEventsByDay(date, 4)
         val adapter = EventShortAdapter(requireContext(), events)
         listView.adapter = adapter
     }

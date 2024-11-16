@@ -10,6 +10,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.remindmeapp.R
 import com.example.remindmeapp.registration.RegistrationService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.jvm.java
 import kotlin.text.trim
 
@@ -29,7 +32,6 @@ class RegisterActivity : Activity() {
         val backButton = findViewById<ImageButton>(R.id.imageButtonBack);
 
         registerButton.setOnClickListener{
-            // TODO: Сделать проверку удалось ли войти
             val login = loginField.text.toString().trim()
             val ip = ipField.text.toString().trim()
             val pass = passField.text.toString().trim()
@@ -47,15 +49,24 @@ class RegisterActivity : Activity() {
                 return@setOnClickListener;
             }
 
-            // TODO: Необходимо отправить запрос на сервак
+            CoroutineScope(Dispatchers.Main).launch {
+                val res = RegistrationService.registerUser(this@RegisterActivity, login, pass, ip)
 
-            if (registered) {
-                val intent = Intent(this, MainActivity::class.java)
-                RegistrationService.loginUser(this, login, pass)
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Не удалось зарегистрироваться, попробуйте снова", Toast.LENGTH_LONG).show()
+                if (!res.isSuccessful){
+                    registered = false
+                    println(res.code)
+                    when (res.code){
+                        400 -> Toast.makeText(this@RegisterActivity, "Логин и пароль должны быть не менее 8 символов.", Toast.LENGTH_LONG).show()
+                        409 -> Toast.makeText(this@RegisterActivity, "Пользователь с таким именем уже зарегистрирован.", Toast.LENGTH_LONG).show()
+                        else -> Toast.makeText(this@RegisterActivity, "Не удалось зарегистрироваться, попробуйте снова", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                if (registered) {
+                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
             }
         }
 

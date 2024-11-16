@@ -121,6 +121,7 @@ class EditEventFragment : Fragment() {
                 event.isPeriodic = event.triggeredPeriod > 0
 
                 // TODO: Логика обновления ивента в БД и на сервере
+                dbHelper.updateEventServer(event)
                 dbHelper.updateEvent(event)
 
                 FragmentSwitcher.backPress(requireActivity())
@@ -146,6 +147,7 @@ class EditEventFragment : Fragment() {
 
         alertDialogBuilder.setPositiveButton("Да") { dialog, _ ->
             // Удаляем событие
+            dbHelper.deleteEventServer(event)
             dbHelper.deleteEventById(eventId)
             dialog.dismiss() // Закрываем диалог
             FragmentSwitcher.backPress(requireActivity())

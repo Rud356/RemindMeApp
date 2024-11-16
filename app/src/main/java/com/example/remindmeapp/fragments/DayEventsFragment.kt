@@ -91,7 +91,7 @@ class DayEventsFragment : Fragment() {
     }
 
     private fun updateEvents(){
-        val events = dbHelper.getEventsByDayAll(date, -1)
+        val events = dbHelper.getEventsByDay(date, -1)
         val adapter = EventShortAdapter(requireContext(), events)
         listView.adapter = adapter
     }

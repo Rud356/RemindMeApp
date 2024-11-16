@@ -92,7 +92,7 @@ class AddEventFragment : Fragment() {
 
                 // TODO: Логика добавления ивента в БД и на сервер
                 val dbHelper = DbHelper(requireContext(), null)
-                dbHelper.addEvent(
+                dbHelper.addEventServer(
                     Event(0, name, text, color, currentTime, currentTime, DateTimeFormatHelper.toZoneString(dateTime), isPeriodic, triggeredPeriod)
                 )
 
