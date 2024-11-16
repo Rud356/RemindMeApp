@@ -124,6 +124,7 @@ class EditEventFragment : Fragment() {
                 dbHelper.updateEventServer(event)
                 dbHelper.updateEvent(event)
 
+                FragmentSwitcher.updateEvents()
                 FragmentSwitcher.backPress(requireActivity())
             } catch (e: Exception){
                 println(e)
@@ -150,6 +151,7 @@ class EditEventFragment : Fragment() {
             dbHelper.deleteEventServer(event)
             dbHelper.deleteEventById(eventId)
             dialog.dismiss() // Закрываем диалог
+            FragmentSwitcher.updateEvents()
             FragmentSwitcher.backPress(requireActivity())
         }
 

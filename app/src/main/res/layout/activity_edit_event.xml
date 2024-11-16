@@ -46,7 +46,7 @@
         android:layout_marginHorizontal="20dp"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/buttonDelete"
+        app:layout_constraintBottom_toTopOf="@+id/buttons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearTop">
@@ -179,40 +179,44 @@
             </com.example.remindmeapp.RepeatSelectorView>
         </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonDelete"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="2dp"
-        android:paddingVertical="10dp"
-        android:backgroundTint="#CF0000"
-        android:fontFamily="@font/nunito_bold"
-        android:text="Удалить"
-        android:textAllCaps="false"
-        android:textColor="@color/static_white"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonEdit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="HardcodedText" />
+        android:id="@+id/buttons"
+        app:layout_constraintBottom_toBottomOf="@id/edit_event"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/buttonEdit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="20dp"
-        android:paddingVertical="10dp"
-        android:fontFamily="@font/nunito_bold"
-        android:text="Изменить"
-        android:textColor="@color/static_white"
-        android:textSize="18sp"
-        android:textAllCaps="false"
-        android:backgroundTint="@color/light_green"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="HardcodedText" />
+        <Button
+            android:id="@+id/buttonDelete"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="2dp"
+            android:paddingVertical="10dp"
+            android:backgroundTint="#CF0000"
+            android:fontFamily="@font/nunito_bold"
+            android:text="Удалить"
+            android:textAllCaps="false"
+            android:textColor="@color/static_white"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText" />
+
+        <Button
+            android:id="@+id/buttonEdit"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"
+            android:paddingVertical="10dp"
+            android:fontFamily="@font/nunito_bold"
+            android:text="Изменить"
+            android:textColor="@color/static_white"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/light_green"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

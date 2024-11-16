@@ -1,6 +1,7 @@
 package com.example.remindmeapp.fragments
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -33,10 +34,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_driwer)
         FragmentSwitcher.initialize(supportFragmentManager, R.id.fragment_container)
-
 
         // Права на отправку уведомлений
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !NotificationManagerCompat.from(this).areNotificationsEnabled()) {

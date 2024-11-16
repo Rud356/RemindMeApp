@@ -39,8 +39,13 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
             val dbHelper = DbHelper(context, null)
             val event = dbHelper.getEventById(id)
 
-            if (event != null)
+            if (event != null) {
+                if (dbHelper.isExpiredAndNeedDelete(event)){
+                    dbHelper.deleteEventServer(event)
+                    dbHelper.deleteEventById(event.id)
+                }
                 dbHelper.updateEventTrigger(event)
+            }
 
             println("Событие сработало и обновлено")
             FragmentSwitcher.updateEvents()

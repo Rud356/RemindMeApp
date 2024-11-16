@@ -1,7 +1,6 @@
 package com.example.remindmeapp.custom
 
 import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -16,9 +15,10 @@ object DateTimeFormatHelper {
     }
 
     fun parseZone(string: String) : LocalDateTime {
-        val zonedDateTime = OffsetDateTime.parse(string, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-        println("Local time: ${zonedDateTime.toLocalDateTime()}")
-        return zonedDateTime.toLocalDateTime()
+        val zonedDateTime = ZonedDateTime.parse(string, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+        val result =  zonedDateTime.withZoneSameInstant(ZoneOffset.systemDefault()).toLocalDateTime()
+        println("Local time: $result from $string")
+        return result
     }
 
     fun toZoneString(dateTime: LocalDateTime) : String {

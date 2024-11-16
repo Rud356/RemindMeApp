@@ -19,6 +19,7 @@ import java.time.LocalDate
 class MainFragment : Fragment() {
     private lateinit var dbHelper: DbHelper
     private lateinit var listView : ListView
+    private lateinit var unsubscribe : () -> Unit
 
     private var date : LocalDate = LocalDate.now();
     private lateinit var textSelectedDate : TextView
@@ -48,6 +49,12 @@ class MainFragment : Fragment() {
             }
         })
 
+        unsubscribe = FragmentSwitcher.onEventTriggered {
+            if (context != null) {
+                updateEvents()
+            }
+        }
+
         return view
     }
 
@@ -68,8 +75,12 @@ class MainFragment : Fragment() {
         else
             textSelectedDate.text = DateFormatHelper.toString(date)
 
+       updateEvents()
+    }
+
+    private fun updateEvents(){
         val events = dbHelper.getEventsByDay(date, 4)
-        val adapter = EventShortAdapter(requireContext(), events)
+        val adapter = EventShortAdapter(this@MainFragment.requireContext(), events)
         listView.adapter = adapter
     }
 }

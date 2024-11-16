@@ -68,12 +68,7 @@ class DayEventsFragment : Fragment() {
         }
 
         unsubscribe = FragmentSwitcher.onEventTriggered {
-            if (context != null) {
-                updateEvents()
-            }
-            else {
-                println("Context for day events not found.")
-            }
+            updateEvents()
         }
 
         view.findViewById<View>(R.id.day_events).setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
@@ -92,7 +87,7 @@ class DayEventsFragment : Fragment() {
 
     private fun updateEvents(){
         val events = dbHelper.getEventsByDay(date, -1)
-        val adapter = EventShortAdapter(requireContext(), events)
+        val adapter = EventShortAdapter(this@DayEventsFragment.requireContext(), events)
         listView.adapter = adapter
     }
 }
