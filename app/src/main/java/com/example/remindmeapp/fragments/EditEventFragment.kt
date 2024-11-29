@@ -152,7 +152,7 @@ class EditEventFragment : Fragment() {
             dbHelper.deleteEventById(eventId)
             dialog.dismiss() // Закрываем диалог
             FragmentSwitcher.updateEvents()
-            FragmentSwitcher.backPress(requireActivity())
+            // FragmentSwitcher.backPress(requireActivity())
         }
 
         alertDialogBuilder.setNegativeButton("Нет") { dialog, _ ->
