@@ -96,7 +96,6 @@ class AddEventFragment : Fragment() {
                     Event(0, name, text, color, currentTime, currentTime, DateTimeFormatHelper.toZoneString(dateTime), isPeriodic, triggeredPeriod)
                 )
 
-                FragmentSwitcher.updateEvents()
                 FragmentSwitcher.backPress(requireActivity())
             } catch (e: Exception){
                 println(e.stackTrace)

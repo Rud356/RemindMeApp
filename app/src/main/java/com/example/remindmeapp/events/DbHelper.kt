@@ -68,8 +68,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
                         val editedTime = DateTimeFormatHelper.parseZone(event.editedAt)
                         val resEditedTime = DateTimeFormatHelper.parseZone(eventResp.last_edited_at)
 
-                        println(resEditedTime.isBefore(editedTime))
-                        if (resEditedTime.isBefore(editedTime)) {
+                        if (!resEditedTime.isAfter(editedTime)) {
                             // Обновление ивента на сервере
                             ReminderApplication.apiClient.patchEvent(event)
                         }
@@ -137,7 +136,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         val triggeredAt = DateTimeFormatHelper.parseZone(event.triggeredAt)
         val currentDateTime = LocalDateTime.now()
 
-        if (triggeredAt.isBefore(currentDateTime)) {
+        if (!triggeredAt.isAfter(currentDateTime)) {
             if (!event.isPeriodic)
                 return true
         }
@@ -149,7 +148,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
         val triggeredAt = DateTimeFormatHelper.parseZone(event.triggeredAt)
         val currentDateTime = LocalDateTime.now()
 
-        if (triggeredAt.isBefore(currentDateTime)) {
+        if (!triggeredAt.isAfter(currentDateTime)) {
             if (event.isPeriodic) {
                 // Актуализация времени для периодических событий
                 var newTriggeredAt = triggeredAt
@@ -199,6 +198,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
             }
 
             addEvent(event)
+            FragmentSwitcher.updateEvents()
         }
     }
 
@@ -216,6 +216,7 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     fun updateEventServer(event: Event) {
         CoroutineScope(Dispatchers.Main).launch {
             ReminderApplication.apiClient.patchEvent(event)
+            FragmentSwitcher.updateEvents()
         }
     }
 
@@ -261,8 +262,10 @@ class DbHelper(val context: Context, val factory : SQLiteDatabase.CursorFactory?
     fun deleteEventById(id: Int): Int {
         val eventToRemove = getEventById(id)
 
-        if (eventToRemove != null)
+        if (eventToRemove != null) {
             ReminderApplication.alarmHelper.removeEvent(eventToRemove)
+            FragmentSwitcher.updateEvents()
+        }
 
         val db = this.writableDatabase
         val result = db.delete(TABLE_NAME, "$COLUMN_ID = ?", arrayOf(id.toString()))
