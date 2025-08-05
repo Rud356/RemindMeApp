@@ -124,7 +124,6 @@ class EditEventFragment : Fragment() {
                 dbHelper.updateEventServer(event)
                 dbHelper.updateEvent(event)
 
-                FragmentSwitcher.updateEvents()
                 FragmentSwitcher.backPress(requireActivity())
             } catch (e: Exception){
                 println(e)
