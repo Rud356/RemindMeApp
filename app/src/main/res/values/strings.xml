@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">RemindMeApp</string>
+    <string name="app_name">Напомни мне</string>
+    <string name="app_name_eng">Remind Me</string>
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+    <string name="form_input_ip">Введите IP-адрес</string>
+    <string name="form_input_password">Введите пароль</string>
+    <string name="form_input_repeat_password">Повторите пароль</string>
+    <string name="form_input_login">Введите логин</string>
+    <string name="navigation_drawer_open">Открыть навигацию</string>
+    <string name="navigation_drawer_close">Закрыть навигацию</string>
+    <string name="notification_text">Дополнительно напомним <font color="#41993E"><b>за час</b></font> до события!</string>
 </resources>
